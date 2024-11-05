@@ -1,4 +1,4 @@
-package com.onlinestore.art_supplies.model;
+package com.onlinestore.art_supplies.users;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,10 +15,18 @@ import org.springframework.stereotype.Component;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_id")
+    private Long userId;
+    private String username;
+    private String password;
 
     @Column(name = "full_name")
     private String fullName;
     private String email;
     private String phone;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }
