@@ -1,7 +1,5 @@
-package com.onlinestore.art_supplies.controller;
+package com.onlinestore.art_supplies.products;
 
-import com.onlinestore.art_supplies.model.Product;
-import com.onlinestore.art_supplies.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@CrossOrigin
+@RequestMapping
 public class ProductController {
     @Autowired
     private ProductService service;
@@ -32,13 +31,26 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public ResponseEntity<?> addProduct(@RequestPart Product product) {
+    public ResponseEntity<?> addProduct(@RequestBody Product product) {
+        if (!product.getImage().startsWith("http")) {
+            return new ResponseEntity<>("Not an URL", HttpStatus.BAD_REQUEST);
+        }
         try {
             System.out.println(product);
             Product product1 = service.addProduct(product);
             return new ResponseEntity<>(product1, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/products")
+    public ResponseEntity<?> deleteProduct(@RequestBody Long productId) {
+        try {
+            service.deleteProduct(productId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Product deleted successfully!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }
