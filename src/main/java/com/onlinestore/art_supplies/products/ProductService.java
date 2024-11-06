@@ -1,7 +1,5 @@
-package com.onlinestore.art_supplies.service;
+package com.onlinestore.art_supplies.products;
 
-import com.onlinestore.art_supplies.model.Product;
-import com.onlinestore.art_supplies.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +22,11 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
+    public void deleteProduct(Long productId) {
+        productRepository.deleteById(productId);
+    }
+
+    public List<Product> searchProducts(String keyword) {
+        return productRepository.searchProducts(keyword);
     }
 }

@@ -1,6 +1,5 @@
-package com.onlinestore.art_supplies.repository;
+package com.onlinestore.art_supplies.products;
 
-import com.onlinestore.art_supplies.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
