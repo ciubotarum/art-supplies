@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/users")
-public class UserController { ;
+public class UserController {
     private final UserService userService;
 
     @Autowired
