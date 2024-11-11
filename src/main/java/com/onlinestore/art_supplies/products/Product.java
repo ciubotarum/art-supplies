@@ -1,5 +1,6 @@
 package com.onlinestore.art_supplies.products;
 
+import com.onlinestore.art_supplies.category.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,10 +20,16 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Long productId;
-    private String name;
+
+    @Column(name = "product_name")
+    private String productName;
+
     private String description;
     private BigDecimal price;
     private int quantity;
-    private String category;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
     private String image;
 }
