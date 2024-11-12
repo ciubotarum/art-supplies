@@ -1,14 +1,24 @@
 package com.onlinestore.art_supplies.products;
 
+import com.onlinestore.art_supplies.category.Category;
+import com.onlinestore.art_supplies.category.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+
     @Autowired
-    private ProductRepository productRepository;
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+    }
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
@@ -19,6 +29,11 @@ public class ProductService {
     }
 
     public Product addProduct(Product product) {
+        if (product.getCategory() != null && product.getCategory().getCategoryId() != null) {
+            Category existingCategory = categoryRepository.findById(product.getCategory().getCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+            product.setCategory(existingCategory);
+        }
         return productRepository.save(product);
     }
 
@@ -27,6 +42,32 @@ public class ProductService {
     }
 
     public List<Product> searchProducts(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
         return productRepository.searchProducts(keyword);
+    }
+
+    public boolean productExistsById(Long productId) {
+        return productRepository.existsById(productId);
+    }
+
+    public Product updateProduct(Long productId, Product updatedProduct) {
+        Optional<Product> existingProductOptional = productRepository.findById(productId);
+
+        if (existingProductOptional.isPresent()) {
+            Product existingProduct = existingProductOptional.get();
+            // Update the fields you want to change
+            existingProduct.setProductName(updatedProduct.getProductName());
+            existingProduct.setDescription(updatedProduct.getDescription());
+            existingProduct.setPrice(updatedProduct.getPrice());
+            existingProduct.setQuantity(updatedProduct.getQuantity());
+            existingProduct.setImage(updatedProduct.getImage());
+            existingProduct.setCategory(updatedProduct.getCategory()); // Ensure this is valid
+
+            return productRepository.save(existingProduct); // Save the updated product
+        } else {
+            throw new RuntimeException("Product not found with id " + productId);
+        }
     }
 }
