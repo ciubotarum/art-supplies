@@ -2,6 +2,8 @@ package com.onlinestore.art_supplies.category;
 
 import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,12 @@ public class CategoryController {
     }
 
     @PostMapping
+    @Operation(summary = "Add a new category",
+            description = "Add a new category to the database",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Category added"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
+            })
     public ResponseEntity<?> addCategory(@RequestBody Category category, @RequestParam Long adminId) {
         User adminUser = userService.getUserById(adminId).orElse(null);
         if (adminUser != null && Boolean.TRUE.equals(adminUser.getIsAdmin())) {
@@ -32,6 +40,12 @@ public class CategoryController {
     }
 
     @GetMapping("/all")
+    @Operation(summary = "Get all categories",
+            description = "Get all categories from the database",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Categories found"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
+            })
     public ResponseEntity<List<Category>> getAllCategories(@RequestParam Long adminId) {
         User adminUser = userService.getUserById(adminId).orElse(null);
         if (adminUser != null && Boolean.TRUE.equals(adminUser.getIsAdmin())) {
@@ -42,6 +56,12 @@ public class CategoryController {
     }
 
     @PutMapping("/{categoryName}")
+    @Operation(summary = "Update category by name",
+            description = "Update category by name in the database",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Category updated"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
+            })
     public ResponseEntity<?> updateCategoryByName(@RequestBody Category category, @PathVariable String categoryName, @RequestParam Long adminId) {
         User adminUser = userService.getUserById(adminId).orElse(null);
         if (adminUser != null && Boolean.TRUE.equals(adminUser.getIsAdmin())) {
@@ -52,6 +72,13 @@ public class CategoryController {
     }
 
     @DeleteMapping
+    @Operation(summary = "Delete category",
+            description = "Delete category by ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Category deleted"),
+                    @ApiResponse(responseCode = "404", description = "Category not found"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
+            })
     public ResponseEntity<?> deleteCategory(@RequestParam Long adminId, @RequestParam Long categoryId) {
         User adminUser = userService.getUserById(adminId).orElse(null);
 
