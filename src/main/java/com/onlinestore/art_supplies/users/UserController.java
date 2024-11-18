@@ -1,5 +1,7 @@
 package com.onlinestore.art_supplies.users;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,23 @@ public class UserController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register a new user",
+            description = "Register a new user",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "User registered"),
+                    @ApiResponse(responseCode = "400", description = "Invalid input")
+            })
     public ResponseEntity<User> register(@RequestBody User user) {
         return new ResponseEntity<>(userService.register(user), HttpStatus.CREATED);
     }
+
     @PostMapping("/login")
+    @Operation(summary = "Login",
+            description = "Login",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Login successful"),
+                    @ApiResponse(responseCode = "401", description = "Invalid username or password")
+            })
     public ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
         User user = userService.login(username, password);
         if (user != null) {
@@ -32,6 +47,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
+    @Operation(summary = "Get user by ID",
+            description = "Get a user by its ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User found"),
+                    @ApiResponse(responseCode = "404", description = "User not found")
+            })
     public ResponseEntity<?> getAllUsers(@PathVariable Long userId, @RequestParam Long adminId) {
         User adminUser = userService.getUserById(adminId).orElse(null);
         if (adminUser != null && Boolean.TRUE.equals(adminUser.getIsAdmin())) {
@@ -43,6 +64,12 @@ public class UserController {
     }
 
     @GetMapping("/all")
+    @Operation(summary = "Get all users",
+            description = "Get all users",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Users found"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
+            })
     public ResponseEntity<?> getAllUsers(@RequestParam Long adminId) {
         User adminUser = userService.getUserById(adminId).orElse(null);
 
