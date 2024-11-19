@@ -1,5 +1,6 @@
 package com.onlinestore.art_supplies.order.orderitem;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.onlinestore.art_supplies.order.Order;
 import com.onlinestore.art_supplies.products.Product;
 import jakarta.persistence.*;
@@ -20,11 +21,12 @@ public class OrderItem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
+    @JsonBackReference
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
     private Product product;
 
     private Integer quantity;
