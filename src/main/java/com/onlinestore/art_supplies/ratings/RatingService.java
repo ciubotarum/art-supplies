@@ -1,11 +1,13 @@
-package com.onlinestore.art_supplies.reviews.ratings;
+package com.onlinestore.art_supplies.ratings;
 
 import com.onlinestore.art_supplies.order.OrderRepository;
 import com.onlinestore.art_supplies.products.Product;
 import com.onlinestore.art_supplies.products.ProductRepository;
 import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -26,9 +28,9 @@ public class RatingService {
 
     public Rating createRating(Integer ratingValue, Long productId, String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found with username: " + username));
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + productId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found with id: " + productId));
         if (userHasOrderedProduct(user, productId)) {
             Rating rating = new Rating();
             rating.setRating(ratingValue);
@@ -36,7 +38,7 @@ public class RatingService {
             rating.setUser(user);
             return ratingRepository.save(rating);
         } else {
-            throw new IllegalArgumentException("User has not ordered this product.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User has not ordered this product.");
         }
     }
 

@@ -1,4 +1,4 @@
-package com.onlinestore.art_supplies.reviews.ratings;
+package com.onlinestore.art_supplies.ratings;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

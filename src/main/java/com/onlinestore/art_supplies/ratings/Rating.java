@@ -1,4 +1,4 @@
-package com.onlinestore.art_supplies.reviews.ratings;
+package com.onlinestore.art_supplies.ratings;
 
 import com.onlinestore.art_supplies.products.Product;
 import com.onlinestore.art_supplies.users.User;
