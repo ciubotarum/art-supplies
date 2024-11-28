@@ -1,53 +1,67 @@
 # Online Art Supplies Shop
 
 ## Overview
-The Online Art Supplies Shop is a web application designed to provide a seamless shopping experience for art enthusiasts. Users can register, browse, and purchase a variety of art supplies while having access to features like product ratings and chat support.
+The Online Art Supplies Shop is a web application designed to provide a seamless shopping experience for art enthusiasts. 
+Users can register, browse, and purchase a variety of art supplies while having access to features like product ratings
+and reviews.
 
 ## Business Requirements
 
-1. **User Registration and Login**
-    - Customers can register for an account and log in to access personalized features.
+1. **User Registration**
+    - Customers can register for an account to access personalized features.
 
-2. **Category Search**
+2. **User Login**
+    - Registered users can log in to their accounts to view order history and manage personal information.
+
+3. **Category filtering**
     - Users can search for products by categories (e.g., paints, brushes, canvases) to easily find desired items.
+   
+4. **Product Search**
+    - Users can search for specific products by name or keywords to quickly locate items of interest.
 
-3. **Product Details Page**
+5. **Product Details Page**
     - Each product page shows important information, including price, product description, available quantity, and images.
 
-4. **Shopping Cart Functionality**
-    - Users can add products to a shopping cart, view total costs, update quantities, and remove items before checkout.
+6. **Shopping Cart Functionality**
+    - Users can add products to a shopping cart, view total costs.
 
-5. **Online Payment System**
-    - Customers can complete their purchases by making payments online through secure payment gateways.
+7. **Order History**
+    - Users can view their previous orders, including details about purchased items.
 
-6. **Order History**
-    - Users can view their previous orders, including details about purchased items and order statuses.
-
-7. **Admin Inventory Management**
+8. **Admin Inventory Management**
     - Administrators can manage inventory by updating stock levels, adding new products, and removing outdated items.
 
-8. **Product Rating System**
+9. **Product Rating System**
     - Users can rate products on a scale (e.g., 1-5 stars) to provide feedback on their purchases.
 
-9. **Product Review System**
-    - Customers can leave reviews for products, sharing their experiences and opinions with other users.
+10. **Product Review System**
+     - Customers can leave reviews for products, sharing their experiences and opinions with other users.
 
-10. **Chat Support**
-    - A chat support feature will be available for users seeking assistance with their orders or inquiries.
 
 ## Minimum Viable Product (MVP) Features
 
-### 1. User Registration and Login
-Implement a secure user registration and login system allowing customers to create accounts, log in, and manage their profiles. This feature will be essential for personalizing the shopping experience and maintaining order history.
+### 1. User Registration
+Customers can create an account by providing their personal information, such as name, email, and password. This 
+feature allows users to access personalized features, such as order history. The registration 
+process includes validation to ensure the accuracy and completeness of the provided information.
 
-### 2. Product Browsing and Search
-Provide a user-friendly interface for browsing products by category. This will include a search functionality that allows users to filter and find specific art supplies quickly, enhancing their shopping experience.
+### 2. Product Details Page
+Each product page displays essential information about the product, including its price, detailed description, available
+quantity, and images. This feature helps users make informed purchasing decisions by providing all necessary details in 
+one place. 
 
-### 3. Shopping Cart and Checkout Process
-Develop a shopping cart feature that enables users to add, remove, and adjust the quantity of products. The checkout process will allow customers to view their cart, see total costs, and securely complete transactions.
+### 3. Category Filtering
+Users can browse products by categories, such as paints, brushes, and canvases. This feature helps users quickly find 
+the items they are interested in by narrowing down the product list based on selected categories. It enhances the
+shopping experience by making it easier to navigate through the product catalog.
 
-### 4. Product Details Page
-Create dedicated product pages that showcase detailed information, including images, descriptions, prices, and availability. This feature will help customers make informed purchasing decisions.
+### 4. Product Search
+Users can search for specific products by entering keywords or product names in the search bar. This feature provides 
+a list of matching products, allowing users to quickly locate items of interest. 
 
-### 5. Admin Product Management
-Implement an admin panel for inventory management, allowing administrators to add new products, update existing product details, and manage stock levels. This will ensure the online shop remains current and well-stocked.
+### 5. Product Rating System
+Users can rate products on a scale (e.g., 1-5 stars) to provide feedback on their purchases. This feature allows 
+customers to share their satisfaction level with the products they have bought. The ratings are aggregated and 
+displayed on the product details page, helping other users make informed purchasing decisions based on the overall 
+rating score.
+
