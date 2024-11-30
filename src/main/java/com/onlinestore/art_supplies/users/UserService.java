@@ -1,6 +1,5 @@
 package com.onlinestore.art_supplies.users;
 
-import ch.qos.logback.core.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,6 @@ public class UserService {
     }
 
     public User register(User user) {
-        if (StringUtil.isNullOrEmpty(user.getUsername()) || StringUtil.isNullOrEmpty(user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Empty username or password");
-        }
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This username already exists");
         }
@@ -33,8 +29,8 @@ public class UserService {
 
     public User login(String username, String password) {
         User user = userRepository.getByUsername(username);
-        if (user == null || !password.matches(user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+        if (user == null || !user.getPassword().equals(password)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
         return user;
     }

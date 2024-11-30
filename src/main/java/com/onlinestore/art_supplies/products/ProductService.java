@@ -3,7 +3,9 @@ package com.onlinestore.art_supplies.products;
 import com.onlinestore.art_supplies.category.Category;
 import com.onlinestore.art_supplies.category.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ public class ProductService {
     public Product addProduct(Product product) {
         if (product.getCategory() != null && product.getCategory().getCategoryId() != null) {
             Category existingCategory = categoryRepository.findById(product.getCategory().getCategoryId())
-                    .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
             product.setCategory(existingCategory);
         }
         return productRepository.save(product);
@@ -57,17 +59,21 @@ public class ProductService {
 
         if (existingProductOptional.isPresent()) {
             Product existingProduct = existingProductOptional.get();
-            // Update the fields you want to change
+
             existingProduct.setProductName(updatedProduct.getProductName());
             existingProduct.setDescription(updatedProduct.getDescription());
             existingProduct.setPrice(updatedProduct.getPrice());
             existingProduct.setQuantity(updatedProduct.getQuantity());
             existingProduct.setImage(updatedProduct.getImage());
-            existingProduct.setCategory(updatedProduct.getCategory()); // Ensure this is valid
+            existingProduct.setCategory(updatedProduct.getCategory());
 
-            return productRepository.save(existingProduct); // Save the updated product
+            return productRepository.save(existingProduct);
         } else {
-            throw new RuntimeException("Product not found with id " + productId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found with id " + productId);
         }
+    }
+
+    public List<Product> getProductsByCategoryName(String categoryName) {
+        return productRepository.findByCategoryName(categoryName);
     }
 }

@@ -18,21 +18,21 @@ public class OrderService {
     }
 
     @Transactional
-    public Order placeOrder(User user, List<OrderItem> cartItems) {
+    public Order placeOrder(User user, List<OrderItem> orderItems) {
         Order order = new Order();
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());
-        order.setTotalAmount(calculateTotalAmount(cartItems));
-        order.setOrderItems(cartItems);
+        order.setTotalAmount(calculateTotalAmount(orderItems));
+        order.setOrderItems(orderItems);
 
-        for (OrderItem item : cartItems) {
+        for (OrderItem item : orderItems) {
             item.setOrder(order);
         }
         order = orderRepository.save(order);
         return order;
     }
 
-    private BigDecimal calculateTotalAmount(List<OrderItem> items) {
+    public BigDecimal calculateTotalAmount(List<OrderItem> items) {
         return items.stream()
                 .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

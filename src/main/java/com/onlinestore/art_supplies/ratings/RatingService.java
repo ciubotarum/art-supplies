@@ -43,7 +43,11 @@ public class RatingService {
     }
 
     public List<Rating> getRatingsByProductId(Long productId) {
-        return ratingRepository.findByProduct_ProductId(productId);
+        List<Rating> ratings = ratingRepository.findByProduct_ProductId(productId);
+        if (ratings.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No ratings found for product with id: " + productId);
+        }
+        return ratings;
     }
 
     private boolean userHasOrderedProduct(User user, Long productId) {

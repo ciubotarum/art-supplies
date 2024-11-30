@@ -1,8 +1,9 @@
 package com.onlinestore.art_supplies.category;
 
-import com.onlinestore.art_supplies.config.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class CategoryService {
             existingCategory.setCategoryName(updatedCategory.getCategoryName());
             return categoryRepository.save(existingCategory);
         } else {
-            throw new RuntimeException("Category not found with name: " + categoryName);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with name: " + categoryName);
         }
     }
 
@@ -41,6 +42,6 @@ public class CategoryService {
 
     public Category getCategoryById(Long categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id " + categoryId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id " + categoryId));
     }
 }
