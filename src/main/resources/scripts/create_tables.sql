@@ -46,13 +46,13 @@ CREATE TABLE order_items
     price      DECIMAL(10, 2) NOT NULL
 );
 
-CREATE TABLE cart_items
-(
-    cart_id    SERIAL PRIMARY KEY,
-    user_id    INT REFERENCES users (user_id) ON DELETE CASCADE,
-    product_id INT REFERENCES products (product_id),
-    quantity   INT NOT NULL
-);
+-- CREATE TABLE cart_items
+-- (
+--     cart_id    SERIAL PRIMARY KEY,
+--     user_id    INT REFERENCES users (user_id) ON DELETE CASCADE,
+--     product_id INT REFERENCES products (product_id),
+--     quantity   INT NOT NULL
+-- );
 
 CREATE TABLE ratings
 (
@@ -73,6 +73,15 @@ CREATE TABLE reviews
 --     FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE,
 --     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
+
+-- CREATE TABLE payments
+-- (
+--     payment_id SERIAL PRIMARY KEY,
+--     order_id INT REFERENCES orders (order_id) ON DELETE CASCADE,
+--     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     amount DECIMAL(10, 2) NOT NULL,
+--     payment_method VARCHAR(20) CHECK (payment_method IN ('credit_card', 'debit_card', 'paypal')) NOT NULL
+-- );
 
 -- Insert sample data into the reviews table
 -- INSERT INTO reviews (product_id, user_id, rating, review_text)

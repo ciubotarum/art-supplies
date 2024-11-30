@@ -12,7 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./src/main/java/scripts/create_populate_users.sql:/docker-entrypoint-initdb.d/create_populate_users.sql
+      - ./src/main/resources/scripts:/docker-entrypoint-initdb.d
 
 volumes:
   pgdata:
