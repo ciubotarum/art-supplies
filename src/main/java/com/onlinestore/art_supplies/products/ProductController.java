@@ -6,10 +6,11 @@ import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -20,7 +21,6 @@ public class ProductController {
     private final UserService userService;
     private final CategoryService categoryService;
 
-    @Autowired
     public ProductController(ProductService productService, UserService userService, CategoryService categoryService) {
         this.productService = productService;
         this.userService = userService;
@@ -31,8 +31,7 @@ public class ProductController {
     @Operation(summary = "Get all products",
             description = "Get all products from the database",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Products found"),
-                    @ApiResponse(responseCode = "404", description = "No products found")
+                    @ApiResponse(responseCode = "200", description = "Products found")
             })
     public ResponseEntity<List<Product>> getAllProducts() {
         return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
@@ -59,24 +58,20 @@ public class ProductController {
             description = "Add a new product to the database",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product added"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input")
+                    @ApiResponse(responseCode = "400", description = "Category not found"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden for non-admin users")
             })
     public ResponseEntity<?> addProduct(
-            @RequestBody Product product,
+            @RequestBody @Valid Product product,
             @RequestParam Long adminId,
             @RequestParam Long categoryId) {
-
-        if (!product.getImage().startsWith("http")) {
-            return new ResponseEntity<>("Not a valid URL", HttpStatus.BAD_REQUEST);
-        }
 
         User adminUser = userService.getUserById(adminId).orElse(null);
 
         if (adminUser != null && Boolean.TRUE.equals(adminUser.getIsAdmin())) {
             Category category = categoryService.getCategoryById(categoryId);
             if (category == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Category not found");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found");
             }
 
             product.setCategory(category);
@@ -95,7 +90,7 @@ public class ProductController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product deleted"),
                     @ApiResponse(responseCode = "404", description = "Product not found"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden")
+                    @ApiResponse(responseCode = "403", description = "Forbidden for non-admin users")
             })
     public ResponseEntity<?> deleteProduct(@RequestParam Long productId, @RequestParam Long adminId) {
         User adminUser = userService.getUserById(adminId).orElse(null);
@@ -113,8 +108,7 @@ public class ProductController {
     @Operation(summary = "Search products",
             description = "Search products by keyword",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Products found"),
-                    @ApiResponse(responseCode = "404", description = "No products found")
+                    @ApiResponse(responseCode = "200", description = "Search results found"),
             })
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword) {
         List<Product> products = productService.searchProducts(keyword);
@@ -129,7 +123,7 @@ public class ProductController {
                     @ApiResponse(responseCode = "404", description = "Product not found"),
                     @ApiResponse(responseCode = "403", description = "Forbidden")
             })
-    public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestParam Long adminId, @RequestBody Product updatedProduct) {
+    public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestParam Long adminId, @RequestBody @Valid Product updatedProduct) {
         User adminUser = userService.getUserById(adminId).orElse(null);
         if (adminUser  == null || !Boolean.TRUE.equals(adminUser .getIsAdmin())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only admin can delete a product.");
@@ -143,10 +137,13 @@ public class ProductController {
             description = "Filter products by category name",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Products found"),
-                    @ApiResponse(responseCode = "404", description = "No products found")
+                    @ApiResponse(responseCode = "404", description = "No such category found")
             })
     public ResponseEntity<List<Product>> filterProductsByType(@RequestParam String categoryName) {
         List<Product> products = productService.getProductsByCategoryName(categoryName);
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
         return ResponseEntity.ok(products);
     }
 }

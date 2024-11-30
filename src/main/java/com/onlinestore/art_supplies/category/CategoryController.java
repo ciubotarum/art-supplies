@@ -4,6 +4,7 @@ import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class CategoryController {
                     @ApiResponse(responseCode = "200", description = "Category added"),
                     @ApiResponse(responseCode = "403", description = "Forbidden")
             })
-    public ResponseEntity<?> addCategory(@RequestBody Category category, @RequestParam Long adminId) {
+    public ResponseEntity<?> addCategory(@Valid @RequestBody Category category, @RequestParam Long adminId) {
         User adminUser = userService.getUserById(adminId).orElse(null);
         if (adminUser != null && Boolean.TRUE.equals(adminUser.getIsAdmin())) {
             return ResponseEntity.ok(categoryService.addCategory(category));
@@ -77,7 +78,7 @@ public class CategoryController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Category deleted"),
                     @ApiResponse(responseCode = "404", description = "Category not found"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden")
+                    @ApiResponse(responseCode = "403", description = "Forbidden, the user is not an admin")
             })
     public ResponseEntity<?> deleteCategory(@RequestParam Long adminId, @RequestParam Long categoryId) {
         User adminUser = userService.getUserById(adminId).orElse(null);

@@ -27,8 +27,8 @@ public class ReviewController {
             description = "Create a new review for a product",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Review created"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input"),
-                    @ApiResponse(responseCode = "404", description = "Product not found")
+                    @ApiResponse(responseCode = "400", description = "User not ordered the product or review text is empty"),
+                    @ApiResponse(responseCode = "404", description = "Product or user not found")
             })
     public ResponseEntity<Review> createReview(
             @RequestBody @Valid ReviewRequest reviewRequest,
@@ -58,10 +58,13 @@ public class ReviewController {
             description = "Get all reviews for a product by product ID",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Reviews found"),
-                    @ApiResponse(responseCode = "404", description = "Product not found")
+                    @ApiResponse(responseCode = "404", description = "No reviews found for product")
             })
     public ResponseEntity<List<Review>> getReviewsByProductId(@PathVariable Long productId) {
         List<Review> reviews = reviewService.getReviewsByProductId(productId);
+        if (reviews.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No reviews found for product with id " + productId);
+        }
         return ResponseEntity.ok(reviews);
     }
 
@@ -69,8 +72,7 @@ public class ReviewController {
     @Operation(summary = "Get all reviews",
             description = "Get all reviews",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Reviews found"),
-                    @ApiResponse(responseCode = "404", description = "No reviews found")
+                    @ApiResponse(responseCode = "200", description = "Reviews found")
             })
     public ResponseEntity<List<Review>> getAllReviews() {
         List<Review> reviews = reviewService.getAllReviews();

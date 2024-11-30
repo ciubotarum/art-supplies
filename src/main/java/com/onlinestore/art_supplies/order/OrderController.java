@@ -7,6 +7,7 @@ import com.onlinestore.art_supplies.products.ProductRepository;
 import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,7 @@ public class OrderController {
     private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
 
-    // Temporary storage for the cart items (in-memory)
-    private final List<OrderItem> cartItems = new ArrayList<>();
+    private final List<OrderItem> orderItems = new ArrayList<>();
 
     public OrderController(OrderService orderService, ProductRepository productRepository, UserRepository userRepository, OrderItemRepository orderItemRepository) {
         this.orderService = orderService;
@@ -38,27 +38,24 @@ public class OrderController {
             description = "Add a product to the cart by product ID and quantity",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product added to cart"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input")
+                    @ApiResponse(responseCode = "404", description = "Product not found")
             })
     public String addToCart(@RequestParam Long productId, @RequestParam Integer quantity) {
-        // Fetch the product by ID
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found with ID: " + productId));
 
-        // Check if the product is already in the cart
-        for (OrderItem item : cartItems) {
+        for (OrderItem item : orderItems) {
             if (item.getProduct().getProductId().equals(productId)) {
                 item.setQuantity(item.getQuantity() + quantity);
                 return "Product quantity updated in cart!";
             }
         }
 
-        // Create a new OrderItem and add it to the cart
         OrderItem orderItem = new OrderItem();
         orderItem.setProduct(product);
         orderItem.setQuantity(quantity);
         orderItem.setPrice(product.getPrice());
-        cartItems.add(orderItem);
+        orderItems.add(orderItem);
 
         return "Product added to cart!";
     }
@@ -66,20 +63,31 @@ public class OrderController {
     @PostMapping("/checkout")
     @Operation(summary = "Checkout",
             description = "Checkout the cart items and place an order",
+            parameters = {
+                    @Parameter(name = "username", description = "The username of the user", required = true, example = "john")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Order placed"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input")
+                    @ApiResponse(responseCode = "400", description = "There are no items in the cart"),
+                    @ApiResponse(responseCode = "404", description = "User not found")
             })
     public Order checkout(@RequestParam String username) {
-        if (cartItems.isEmpty()) {
+        if (orderItems.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty. Please add items before checking out.");
         }
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with username: " + username));
 
-        Order order = orderService.placeOrder(user, cartItems);
-        cartItems.clear();
+        Order order = orderService.placeOrder(user, orderItems);
+
+        for (OrderItem item : orderItems) {
+            Product product = item.getProduct();
+            product.setQuantity(product.getQuantity() - item.getQuantity());
+            productRepository.save(product);
+        }
+
+        orderItems.clear();
 
         return order;
     }
@@ -92,7 +100,6 @@ public class OrderController {
                     @ApiResponse(responseCode = "404", description = "User not found")
             })
     public List<Order> getOrderHistory(@RequestParam String username) {
-        // Fetch the user from the database
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with username: " + username));
 
@@ -107,12 +114,8 @@ public class OrderController {
 
     @GetMapping("/items")
     @Operation(summary = "Get cart items",
-            description = "Get the items in the cart",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Cart items found"),
-                    @ApiResponse(responseCode = "404", description = "Cart is empty")
-            })
-    public List<OrderItem> getCartItems() {
-        return cartItems;
+            description = "Get the items in the cart")
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
     }
 }

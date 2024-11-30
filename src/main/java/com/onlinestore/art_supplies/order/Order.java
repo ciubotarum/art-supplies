@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.onlinestore.art_supplies.order.orderitem.OrderItem;
 import com.onlinestore.art_supplies.users.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,11 +28,14 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @NotNull(message = "User cannot be null.")
     private User user;
 
+    @NotNull(message = "Order date cannot be null.")
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
+    @Positive(message = "Total amount must be greater than 0.")
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
 

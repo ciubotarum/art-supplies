@@ -23,8 +23,8 @@ public class RatingController {
             description = "Create a new rating for a product",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Rating created"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input"),
-                    @ApiResponse(responseCode = "404", description = "Product not found")
+                    @ApiResponse(responseCode = "400", description = "User not ordered this product"),
+                    @ApiResponse(responseCode = "404", description = "User or product not found")
             })
     public ResponseEntity<Rating> createRating(
             @RequestBody @Valid RatingRequest ratingRequest) {
@@ -51,8 +51,7 @@ public class RatingController {
     @Operation(summary = "Get all ratings",
             description = "Get all ratings",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Ratings found"),
-                    @ApiResponse(responseCode = "404", description = "No ratings found")
+                    @ApiResponse(responseCode = "200", description = "Ratings found")
             })
     public ResponseEntity<List<Rating>> allRatings() {
         List<Rating> ratings = ratingService.getAllRatings();
