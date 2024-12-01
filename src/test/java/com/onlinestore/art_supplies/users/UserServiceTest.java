@@ -7,6 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -18,16 +20,24 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-//    @Test
-//    void register_ShouldThrowException_WhenUsernameOrPasswordIsEmpty() {
-//        User user = new User();
-//        user.setUsername("");
-//        user.setPassword("");
-//
-//        ResponseStatusException exception = assertThrows(
-//                ResponseStatusException.class, () -> userService.register(user));
-//        assertEquals("400 BAD_REQUEST \"Empty username or password\"", exception.getMessage());
-//    }
+    @Test
+    void register_ShouldSaveUser_WhenValidUser() {
+        User user = new User();
+        user.setUsername("newUsername");
+        user.setPassword("password");
+        user.setPhone("1234567890");
+        user.setFullName("New User");
+
+        when(userRepository.existsByUsername("newUsername")).thenReturn(false);
+
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        User savedUser = userService.register(user);
+        assertNotNull(savedUser);
+        assertEquals("newUsername", savedUser.getUsername());
+        verify(userRepository, times(1)).save(user);
+    }
+
 
     @Test
     void register_ShouldThrowException_WhenUsernameAlreadyExists() {
@@ -43,30 +53,6 @@ class UserServiceTest {
     }
 
     @Test
-    void register_ShouldSaveUser_WhenValidUser() {
-        User user = new User();
-        user.setUsername("newUsername");
-        user.setPassword("password");
-
-        when(userRepository.existsByUsername(user.getUsername())).thenReturn(false);
-        when(userRepository.save(user)).thenReturn(user);
-
-        User savedUser = userService.register(user);
-        assertNotNull(savedUser);
-        assertEquals("newUsername", savedUser.getUsername());
-        verify(userRepository, times(1)).save(user);
-    }
-
-    @Test
-    void login_ShouldThrowException_WhenInvalidCredentials() {
-        when(userRepository.getByUsername("username")).thenReturn(null);
-
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> userService.login("username", "password"));
-        assertEquals("401 UNAUTHORIZED \"Invalid username or password\"", exception.getMessage());
-    }
-
-    @Test
     void login_ShouldReturnUser_WhenValidCredentials() {
         User user = new User();
         user.setUsername("username");
@@ -74,9 +60,68 @@ class UserServiceTest {
 
         when(userRepository.getByUsername("username")).thenReturn(user);
 
-        User loggedInUser = userService.login("username", "password");
+        Optional<User> loggedInUser = userService.login("username", "password");
         assertNotNull(loggedInUser);
-        assertEquals("username", loggedInUser.getUsername());
+        assertEquals("username", loggedInUser.get().getUsername());
     }
+
+    @Test
+    void login_ShouldReturnEmpty_WhenUsernameIsNull() {
+        Optional<User> result = userService.login(null, "password");
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void login_ShouldReturnEmpty_WhenPasswordDoesNotMatch() {
+        User user = new User();
+        user.setUsername("username");
+        user.setPassword("correctPassword");
+
+        when(userRepository.getByUsername("username")).thenReturn(user);
+
+        Optional<User> result = userService.login("username", "wrongPassword");
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void isLoggedIn_ShouldReturnTrue_WhenUserIsLoggedIn() {
+        User user = new User();
+        user.setUsername("username");
+        user.setPassword("password");
+        user.setUserId(1L);
+
+        when(userRepository.getByUsername("username")).thenReturn(user);
+
+        userService.login("username", "password");
+        assertTrue(userService.isLoggedIn(1L));
+    }
+
+    @Test
+    void isLoggedIn_ShouldReturnFalse_WhenUserIsNotLoggedIn() {
+        assertFalse(userService.isLoggedIn(1L));
+    }
+
+
+    @Test
+    void getUserById_ShouldReturnUser_WhenUserExists() {
+        User user = new User();
+        user.setUserId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        Optional<User> result = userService.getUserById(1L);
+        assertTrue(result.isPresent());
+        assertEquals(1L, result.get().getUserId());
+    }
+
+    @Test
+    void getUserById_ShouldReturnEmpty_WhenUserDoesNotExist() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Optional<User> result = userService.getUserById(1L);
+        assertTrue(result.isEmpty());
+    }
+
+
 
 }
