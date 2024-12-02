@@ -40,13 +40,13 @@ public class ProductController {
         return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
-    @GetMapping("/product/{id}")
+    @GetMapping("/product/{productId}")
     @Operation(summary = "Retrieve a product by its ID",
             description = "Fetch detailed information about a specific product using its unique ID. Returns the product" +
                     " details if found, or an error message if the product does not exist.",
             parameters = {
                     @Parameter(
-                            name = "id",
+                            name = "productId",
                             description = "The unique identifier of the product to retrieve",
                             required = true,
                             example = "7"
@@ -56,8 +56,8 @@ public class ProductController {
                     @ApiResponse(responseCode = "200", description = "Product found"),
                     @ApiResponse(responseCode = "404", description = "Product not found")
             })
-    public ResponseEntity<?> getProductById(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
+    public ResponseEntity<?> getProductById(@PathVariable Long productId) {
+        Product product = productService.getProductById(productId);
         if (product != null) {
             return new ResponseEntity<>(product, HttpStatus.OK);
         } else {

@@ -2,6 +2,7 @@ package com.onlinestore.art_supplies.ratings;
 
 import com.onlinestore.art_supplies.dto.RatingRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,19 @@ public class RatingController {
 
     @PostMapping
     @Operation(summary = "Create a new rating",
-            description = "Create a new rating for a product",
+            description = "Allows users to submit a rating for a specific product. Users can only rate products " +
+                    "they have purchased.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Details for creating a new rating",
+                    required = true,
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = RatingRequest.class)
+                    )
+            ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Rating created"),
-                    @ApiResponse(responseCode = "400", description = "User not ordered this product"),
+                    @ApiResponse(responseCode = "400", description = "User not ordered this product or invalid input"),
+                    @ApiResponse(responseCode = "403", description = "User is not logged in"),
                     @ApiResponse(responseCode = "404", description = "User or product not found")
             })
     public ResponseEntity<Rating> createRating(
@@ -37,10 +47,18 @@ public class RatingController {
 
     @GetMapping("/product/{productId}")
     @Operation(summary = "Get ratings by product ID",
-            description = "Get all ratings for a product by product ID",
+            description = "Fetches all ratings submitted for a specific product using the product's unique ID.",
+            parameters = {
+                    @Parameter(
+                            name = "productId",
+                            description = "The unique identifier of the product to retrieve the ratings",
+                            required = true,
+                            example = "8"
+                    )
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Ratings found"),
-                    @ApiResponse(responseCode = "404", description = "Product not found")
+                    @ApiResponse(responseCode = "404", description = "Ratings not found")
             })
     public ResponseEntity<List<Rating>> getRatingsByProductId(@PathVariable Long productId) {
         List<Rating> ratings = ratingService.getRatingsByProductId(productId);
@@ -49,7 +67,7 @@ public class RatingController {
 
     @GetMapping("/all")
     @Operation(summary = "Get all ratings",
-            description = "Get all ratings",
+            description = "Retrieves a list of all ratings across all products.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Ratings found")
             })
