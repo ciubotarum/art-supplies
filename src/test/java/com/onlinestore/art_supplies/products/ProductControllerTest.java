@@ -10,17 +10,20 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @WebMvcTest(ProductController.class)
 class ProductControllerTest {
@@ -43,7 +46,7 @@ class ProductControllerTest {
     }
 
     @Test
-    void testGetAllProducts() throws Exception {
+    void testGetAllProducts_ShouldReturnOkStatus() throws Exception {
         Product product1 = new Product();
         Product product2 = new Product();
         when(productService.getAllProducts()).thenReturn(Arrays.asList(product1, product2));
@@ -54,7 +57,7 @@ class ProductControllerTest {
     }
 
     @Test
-    void testGetProductById() throws Exception {
+    void testGetProductById_ShouldReturnOkStatus() throws Exception {
         Product product = new Product();
         product.setProductId(1L);
         when(productService.getProductById(1L)).thenReturn(product);
@@ -143,9 +146,8 @@ class ProductControllerTest {
 
     @Test
     void testAddProduct_NotAdmin() throws Exception {
-        User user = new User();
-
-        when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Only logged-in admins can perform this action."))
+                .when(userService).checkAdminAndLoggedIn(anyLong());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/products")
                         .param("adminId", "1")
@@ -161,7 +163,7 @@ class ProductControllerTest {
                                 """)
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string("Access denied: Only admins can add a product."));
+                .andExpect(MockMvcResultMatchers.content().string("Access denied: Only logged-in admins can perform this action."));
 
     }
 
@@ -197,18 +199,15 @@ class ProductControllerTest {
 
     @Test
     void testDeleteProduct_NotAdmin() throws Exception {
-        User user = new User();
-        Product product = new Product();
-        product.setProductId(1L);
-
-        when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Only logged-in admins can perform this action."))
+                .when(userService).checkAdminAndLoggedIn(anyLong());
         when(productService.productExistsById(anyLong())).thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/products")
                         .param("productId", "1")
                         .param("adminId", "1"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string("Only admin can delete a product."));
+                .andExpect(MockMvcResultMatchers.content().string("Access denied: Only logged-in admins can perform this action."));
     }
 
     @Test
@@ -225,6 +224,7 @@ class ProductControllerTest {
     void testUpdateProduct_Success() throws Exception {
         User adminUser = new User();
         adminUser.setIsAdmin(true);
+        adminUser.setUserId(1L);
 
         Product initialProduct = new Product();
         initialProduct.setProductId(1L);
@@ -242,8 +242,8 @@ class ProductControllerTest {
         updatedProduct.setQuantity(50);
         updatedProduct.setImage("http://example.com/image.jpg");
 
-
-        when(userService.getUserById(anyLong())).thenReturn(Optional.of(adminUser));
+        doNothing().when(userService).checkAdminAndLoggedIn(anyLong());
+        when(productService.productExistsById(anyLong())).thenReturn(true);
         when(productService.updateProduct(anyLong(), any(Product.class))).thenReturn(updatedProduct);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/products/1")
@@ -269,10 +269,8 @@ class ProductControllerTest {
 
     @Test
     void testUpdateProduct_NotAdmin() throws Exception {
-        User user = new User();
-        Product updatedProduct = new Product();
-
-        when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Only logged-in admins can perform this action."))
+                .when(userService).checkAdminAndLoggedIn(anyLong());
 
         mockMvc.perform(MockMvcRequestBuilders.put("/products/1")
                         .param("adminId", "1")
@@ -287,20 +285,29 @@ class ProductControllerTest {
                                 """)
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string("Only admin can delete a product."));
+                .andExpect(MockMvcResultMatchers.content().string("Access denied: Only logged-in admins can perform this action."));
     }
 
     @Test
-    void testFilterProductsByType() throws Exception {
-        Product product = new Product();
+    void testFilterProductsByCategory_Success() throws Exception {
+        Product product1 = new Product();
         Product product2 = new Product();
 
-        when(productService.getProductsByCategoryName("category")).thenReturn(Arrays.asList(product, product2));
+        when(productService.getProductsByCategoryName("Watercolor")).thenReturn(Arrays.asList(product1, product2));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/products/filter")
-                        .param("categoryName", "category"))
+                        .param("categoryName", "Watercolor"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(2));
+    }
 
+    @Test
+    void testFilterProductsByCategory_NotFound() throws Exception {
+        when(productService.getProductsByCategoryName("NonExistentCategory")).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/products/filter")
+                        .param("categoryName", "NonExistentCategory"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string("No such category"));
     }
 }
