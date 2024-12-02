@@ -47,9 +47,8 @@ class RatingControllerTest {
 
     @Test
     void testCreateRating_UserNotFound() throws Exception {
-
-        when(ratingService.createRating(anyInt(), anyLong(), anyString()))
-                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with username: testUser"));
+        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with username: testUser"))
+                .when(ratingService).createRating(anyInt(), anyLong(), anyString());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/ratings")
                         .contentType("application/json")
@@ -61,7 +60,7 @@ class RatingControllerTest {
                                  }
                                 """))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("User not found with username: testUser"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("User not found with username: testUser"));
     }
 
     @Test
@@ -80,7 +79,7 @@ class RatingControllerTest {
                                  }
                                 """))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("Product not found with id: 1"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Product not found with id: 1"));
     }
 
     @Test
@@ -99,7 +98,7 @@ class RatingControllerTest {
                                  }
                                 """))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.status().reason("User has not ordered this product."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("User has not ordered this product."));
     }
 
     @Test
@@ -129,7 +128,7 @@ class RatingControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/ratings/product/1"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("No ratings found for product with id: 1"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No ratings found for product with id: 1"));
 
     }
 

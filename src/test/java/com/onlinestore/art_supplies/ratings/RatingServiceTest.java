@@ -5,6 +5,7 @@ import com.onlinestore.art_supplies.products.Product;
 import com.onlinestore.art_supplies.products.ProductRepository;
 import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserRepository;
+import com.onlinestore.art_supplies.users.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -34,8 +35,12 @@ class RatingServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private RatingService ratingService;
+
 
     @BeforeEach
     void setUp() {
@@ -46,14 +51,18 @@ class RatingServiceTest {
     void testCreateRating_Success() {
         User user = new User();
         user.setUsername("testUser");
+        user.setUserId(1L);
+
         Product product = new Product();
         product.setProductId(1L);
+
         Rating rating = new Rating();
         rating.setRating(5);
         rating.setProduct(product);
         rating.setUser(user);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(userService.isLoggedIn(1L)).thenReturn(true);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(orderRepository.existsByUserAndOrderItems_Product_ProductId(user, 1L)).thenReturn(true);
         when(ratingRepository.save(any(Rating.class))).thenReturn(rating);
@@ -81,8 +90,10 @@ class RatingServiceTest {
     void testCreateRating_ProductNotFound() {
         User user = new User();
         user.setUsername("testUser");
+        user.setUserId(1L);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(userService.isLoggedIn(1L)).thenReturn(true);
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
@@ -97,10 +108,13 @@ class RatingServiceTest {
     void testCreateRating_UserHasNotOrderedProduct() {
         User user = new User();
         user.setUsername("testUser");
+        user.setUserId(1L);
+
         Product product = new Product();
         product.setProductId(1L);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(userService.isLoggedIn(1L)).thenReturn(true);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(orderRepository.existsByUserAndOrderItems_Product_ProductId(user, 1L)).thenReturn(false);
 
@@ -113,7 +127,7 @@ class RatingServiceTest {
     }
 
     @Test
-    void testGetRatingsByProductId() {
+    void testGetRatingsByProductId_Successfully() {
         Rating rating1 = new Rating();
         Rating rating2 = new Rating();
         when(ratingRepository.findByProduct_ProductId(1L)).thenReturn(List.of(rating1, rating2));
@@ -122,6 +136,18 @@ class RatingServiceTest {
 
         assertEquals(2, ratings.size());
         verify(ratingRepository, times(1)).findByProduct_ProductId(1L);
+    }
+
+    @Test
+    void testGetRatingsByProductId_NoRatingsFound() {
+        when(ratingRepository.findByProduct_ProductId(1L)).thenReturn(List.of());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            ratingService.getRatingsByProductId(1L);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertEquals("No ratings found for product with id: 1", exception.getReason());
     }
 
     @Test
