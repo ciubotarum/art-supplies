@@ -132,4 +132,17 @@ class ProductServiceTest {
         verify(productRepository, times(1)).findById(1L);
         verify(productRepository, times(0)).save(any(Product.class));
     }
+
+    @Test
+    void testGetProductsByCategoryName() {
+        Product product1 = new Product();
+        Product product2 = new Product();
+
+        when(productRepository.findByCategoryName("Watercolor")).thenReturn(Arrays.asList(product1, product2));
+
+        List<Product> products = productService.getProductsByCategoryName("Watercolor");
+
+        assertEquals(2, products.size());
+        verify(productRepository, times(1)).findByCategoryName("Watercolor");
+    }
 }
