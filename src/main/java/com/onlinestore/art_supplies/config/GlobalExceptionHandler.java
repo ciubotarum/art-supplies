@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -22,8 +24,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException e) {
-        return ResponseEntity.status(e.getStatusCode())
-                .body(e.getReason());
+    public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException e) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", e.getReason());
+        return new ResponseEntity<>(response, e.getStatusCode());
     }
 }
