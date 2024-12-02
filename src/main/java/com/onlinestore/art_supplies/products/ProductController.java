@@ -4,6 +4,7 @@ import com.onlinestore.art_supplies.category.Category;
 import com.onlinestore.art_supplies.category.CategoryService;
 import com.onlinestore.art_supplies.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,19 +30,28 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    @Operation(summary = "Get all products",
-            description = "Retrieve all products from the database",
+    @Operation(summary = "Retrieve all products",
+            description = "Fetch a list of all products available in the database. Each product includes details such " +
+                    "as productId, productName, description, price, quantity, category, and image URL",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Products found")
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of products")
             })
     public ResponseEntity<List<Product>> getAllProducts() {
         return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
     @GetMapping("/product/{id}")
-    @Operation(summary = "Get product by ID",
-            description = "Retrieve a product by its ID",
-
+    @Operation(summary = "Retrieve a product by its ID",
+            description = "Fetch detailed information about a specific product using its unique ID. Returns the product" +
+                    " details if found, or an error message if the product does not exist.",
+            parameters = {
+                    @Parameter(
+                            name = "id",
+                            description = "The unique identifier of the product to retrieve",
+                            required = true,
+                            example = "7"
+                    )
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product found"),
                     @ApiResponse(responseCode = "404", description = "Product not found")
@@ -103,8 +113,13 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Search products",
-            description = "Search products by keyword",
+    @Operation(summary = "Search for products",
+            description = "Allows users to search for products by providing a keyword. The search matches product " +
+                    "names or descriptions containing the given keyword.",
+            parameters = {
+            @Parameter(name = "keyword", description = "The keyword to search for. The search is case-insensitive.",
+                    required = true, example = "brush"),
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Search results found"),
             })
@@ -141,7 +156,8 @@ public class ProductController {
                     @ApiResponse(responseCode = "200", description = "Products found"),
                     @ApiResponse(responseCode = "404", description = "No such category found")
             })
-    public ResponseEntity<?> filterProductsByCategory(@RequestParam String categoryName) {
+    public ResponseEntity<?> filterProductsByCategory(
+            @RequestParam @Parameter(description = "Name of the category to filter products by", example = "brushes") String categoryName) {
         List<Product> products = productService.getProductsByCategoryName(categoryName);
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No such category");

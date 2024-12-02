@@ -24,7 +24,8 @@ public class UserController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user",
-            description = "Take personal details and register a new user",
+            description = "Registers a new user by providing personal details including username, password, fullName," +
+                    " email, and phone number.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Put your username, password, fullName, email and phone"
             ),
