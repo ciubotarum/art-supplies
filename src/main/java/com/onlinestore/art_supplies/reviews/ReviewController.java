@@ -42,13 +42,15 @@ public class ReviewController {
             description = "Delete a review by review ID",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Review deleted"),
-                    @ApiResponse(responseCode = "404", description = "Review not found")
+                    @ApiResponse(responseCode = "404", description = "Review not found"),
+                    @ApiResponse(responseCode = "401", description = "User is not logged in"),
+                    @ApiResponse(responseCode = "403", description = "User is not authorized to delete this review")
             })
-    public ResponseEntity<String> deleteReview(@PathVariable Long reviewId) {
+    public ResponseEntity<String> deleteReview(@PathVariable Long reviewId, @RequestParam Long userId) {
         try {
-            reviewService.deleteReview(reviewId);
+            reviewService.deleteReview(reviewId, userId);
             return ResponseEntity.ok("Review with id " + reviewId + " was deleted successfully!");
-        } catch (IllegalArgumentException e) {
+        } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
