@@ -16,8 +16,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @WebMvcTest(ReviewController.class)
 class ReviewControllerTest {
@@ -68,7 +67,7 @@ class ReviewControllerTest {
                                 """)
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("User not found with username: " + username));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("User not found with username: " + username));
     }
 
     @Test
@@ -86,7 +85,7 @@ class ReviewControllerTest {
                                 """)
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("Product not found with id: 1"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Product not found with id: 1"));
     }
 
     @Test
@@ -104,7 +103,7 @@ class ReviewControllerTest {
                                 """)
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.status().reason("User has not ordered this product."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("User has not ordered this product."));
     }
 
     @Test
@@ -126,19 +125,28 @@ class ReviewControllerTest {
 
     @Test
     void testDeleteReview_Successfully() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/reviews/1"))
+        Long userId = 1L;
+        Long reviewId = 1L;
+        doNothing().when(reviewService).deleteReview(reviewId, userId);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/reviews/{reviewId}", reviewId)
+                        .param("userId", userId.toString()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Review with id 1 was deleted successfully!"));
+                .andExpect(MockMvcResultMatchers.content().string("Review with id " + reviewId + " was deleted successfully!"));
     }
 
     @Test
     void testDeleteReview_NotFound() throws Exception {
-        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Review with 1 does not exist."))
-                .when(reviewService).deleteReview(1L);
+        Long reviewId = 1L;
+        Long userId = 1L;
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/reviews/1"))
+        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Review with " + reviewId + " does not exist."))
+                .when(reviewService).deleteReview(reviewId, userId);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/reviews/{reviewId}", reviewId)
+                        .param("userId", userId.toString()))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("Review with 1 does not exist."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("404 NOT_FOUND \"Review with " + reviewId + " does not exist.\""));
     }
 
     @Test
@@ -155,7 +163,7 @@ class ReviewControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/reviews/product/1"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("No reviews found for product with id 1"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No reviews found for product with id 1"));
     }
 
     @Test

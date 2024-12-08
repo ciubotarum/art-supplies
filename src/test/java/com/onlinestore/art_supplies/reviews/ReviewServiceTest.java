@@ -5,6 +5,7 @@ import com.onlinestore.art_supplies.products.Product;
 import com.onlinestore.art_supplies.products.ProductRepository;
 import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserRepository;
+import com.onlinestore.art_supplies.users.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -35,8 +36,13 @@ class ReviewServiceTest {
     @Mock
     private ProductRepository productRepository;
 
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private ReviewService reviewService;
+
+
 
     @BeforeEach
     void setUp() {
@@ -47,8 +53,11 @@ class ReviewServiceTest {
     void testCreateReview_Success() {
         User user = new User();
         user.setUsername("testUser");
+        user.setUserId(1L);
+
         Product product = new Product();
         product.setProductId(1L);
+
         Review review = new Review();
         review.setReviewText("Great product!");
         review.setProduct(product);
@@ -58,6 +67,7 @@ class ReviewServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(orderRepository.existsByUserAndOrderItems_Product_ProductId(user, 1L)).thenReturn(true);
         when(reviewRepository.save(any(Review.class))).thenReturn(review);
+        when(userService.isLoggedIn(1L)).thenReturn(true);
 
         Review createdReview = reviewService.createReview("Great product!", 1L, "testUser");
 
@@ -81,9 +91,11 @@ class ReviewServiceTest {
     void testCreateReview_ProductNotFound() {
         User user = new User();
         user.setUsername("testUser");
+        user.setUserId(1L);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userService.isLoggedIn(1L)).thenReturn(true);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> reviewService.createReview("Great product!", 1L, "testUser"));
@@ -96,12 +108,14 @@ class ReviewServiceTest {
     void testCreateReview_UserHasNotOrderedProduct() {
         User user = new User();
         user.setUsername("testUser");
+        user.setUserId(1L);
         Product product = new Product();
         product.setProductId(1L);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(orderRepository.existsByUserAndOrderItems_Product_ProductId(user, 1L)).thenReturn(false);
+        when(userService.isLoggedIn(1L)).thenReturn(true);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             reviewService.createReview("Great product!", 1L, "testUser");
@@ -113,23 +127,36 @@ class ReviewServiceTest {
 
     @Test
     void testDeleteReview_Success() {
-        when(reviewRepository.existsById(1L)).thenReturn(true);
+        Long reviewId = 1L;
+        Long userId = 1L;
+        User user = new User();
+        user.setUserId(userId);
+        Review review = new Review();
+        review.setReviewId(reviewId);
+        review.setUser(user);
 
-        reviewService.deleteReview(1L);
+        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userService.isLoggedIn(userId)).thenReturn(true);
 
-        verify(reviewRepository, times(1)).deleteById(1L);
+        reviewService.deleteReview(reviewId, userId);
+
+        verify(reviewRepository, times(1)).deleteById(reviewId);
     }
 
     @Test
     void testDeleteReview_NotFound() {
-        when(reviewRepository.existsById(1L)).thenReturn(false);
+        Long reviewId = 1L;
+        Long userId = 1L;
+
+        when(reviewRepository.findById(reviewId)).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            reviewService.deleteReview(1L);
+            reviewService.deleteReview(reviewId, userId);
         });
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-        assertEquals("Review with 1 does not exist.", exception.getReason());
+        assertEquals("Review with " + reviewId + " does not exist.", exception.getReason());
     }
 
     @Test

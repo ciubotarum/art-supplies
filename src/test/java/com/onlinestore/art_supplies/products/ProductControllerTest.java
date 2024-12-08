@@ -163,7 +163,7 @@ class ProductControllerTest {
                                 """)
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string("Access denied: Only logged-in admins can perform this action."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access denied: Only logged-in admins can perform this action."));
 
     }
 
@@ -207,7 +207,7 @@ class ProductControllerTest {
                         .param("productId", "1")
                         .param("adminId", "1"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string("Access denied: Only logged-in admins can perform this action."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access denied: Only logged-in admins can perform this action."));
     }
 
     @Test
@@ -285,7 +285,7 @@ class ProductControllerTest {
                                 """)
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string("Access denied: Only logged-in admins can perform this action."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Access denied: Only logged-in admins can perform this action."));
     }
 
     @Test
