@@ -1,5 +1,6 @@
 package com.onlinestore.art_supplies.users;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,30 +21,35 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    @Test
-    void register_ShouldSaveUser_WhenValidUser() {
-        User user = new User();
-        user.setUsername("newUsername");
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = new User();
+        user.setUsername("username");
         user.setPassword("password");
         user.setPhone("1234567890");
-        user.setFullName("New User");
+        user.setFullName("User FullName");
+        user.setUserId(1L);
+    }
 
-        when(userRepository.existsByUsername("newUsername")).thenReturn(false);
+    @Test
+    void register_ShouldSaveUser_WhenValidUser() {
+
+        when(userRepository.existsByUsername("username")).thenReturn(false);
 
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         User savedUser = userService.register(user);
         assertNotNull(savedUser);
-        assertEquals("newUsername", savedUser.getUsername());
+        assertEquals("username", savedUser.getUsername());
         verify(userRepository, times(1)).save(user);
     }
 
 
     @Test
     void register_ShouldThrowException_WhenUsernameAlreadyExists() {
-        User user = new User();
         user.setUsername("existingUsername");
-        user.setPassword("password");
 
         when(userRepository.existsByUsername("existingUsername")).thenReturn(true);
 
@@ -54,9 +60,6 @@ class UserServiceTest {
 
     @Test
     void login_ShouldReturnUser_WhenValidCredentials() {
-        User user = new User();
-        user.setUsername("username");
-        user.setPassword("password");
 
         when(userRepository.getByUsername("username")).thenReturn(user);
 
@@ -73,9 +76,6 @@ class UserServiceTest {
 
     @Test
     void login_ShouldReturnEmpty_WhenPasswordDoesNotMatch() {
-        User user = new User();
-        user.setUsername("username");
-        user.setPassword("correctPassword");
 
         when(userRepository.getByUsername("username")).thenReturn(user);
 
@@ -85,10 +85,6 @@ class UserServiceTest {
 
     @Test
     void isLoggedIn_ShouldReturnTrue_WhenUserIsLoggedIn() {
-        User user = new User();
-        user.setUsername("username");
-        user.setPassword("password");
-        user.setUserId(1L);
 
         when(userRepository.getByUsername("username")).thenReturn(user);
 
@@ -104,8 +100,6 @@ class UserServiceTest {
 
     @Test
     void getUserById_ShouldReturnUser_WhenUserExists() {
-        User user = new User();
-        user.setUserId(1L);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -121,7 +115,4 @@ class UserServiceTest {
         Optional<User> result = userService.getUserById(1L);
         assertTrue(result.isEmpty());
     }
-
-
-
 }
