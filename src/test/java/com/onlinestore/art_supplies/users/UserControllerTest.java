@@ -28,9 +28,21 @@ class UserControllerTest {
     @MockBean
     private UserService userService;
 
+    private User user;
+    private User adminUser;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        user = new User();
+        user.setUsername("user");
+        user.setPassword("password");
+        user.setFullName("User FullName");
+        user.setUserId(1L);
+
+        adminUser = new User();
+        adminUser.setIsAdmin(true);
+        adminUser.setUserId(1L);
     }
 
     @Test
@@ -71,10 +83,6 @@ class UserControllerTest {
 
     @Test
     void login_ShouldReturnOkStatus_WhenCredentialsAreValid() throws Exception {
-        User user = new User();
-        user.setUsername("user");
-        user.setPassword("password");
-        user.setFullName("User FullName");
 
         when(userService.login("user", "password")).thenReturn(Optional.of(user));
 
@@ -98,8 +106,6 @@ class UserControllerTest {
 
     @Test
     void getUserById_ShouldReturnOkStatus_WhenAdminUser() throws Exception {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(adminUser));
         when(userService.isLoggedIn(1L)).thenReturn(true);
@@ -112,9 +118,8 @@ class UserControllerTest {
 
     @Test
     void getUserById_ShouldReturnForbiddenStatus_WhenNotAdminUser() throws Exception {
-        User nonAdminUser = new User();
 
-        when(userService.getUserById(1L)).thenReturn(Optional.of(nonAdminUser));
+        when(userService.getUserById(1L)).thenReturn(Optional.of(user));
         when(userService.isLoggedIn(1L)).thenReturn(true);
 
         doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Only logged-in admins can perform this action."))
@@ -123,13 +128,11 @@ class UserControllerTest {
         mockMvc.perform(get("/users/2")
                         .param("adminId", "1"))
                 .andExpect(status().isForbidden())
-                .andExpect(content().string("Access denied: Only logged-in admins can perform this action."));
+                .andExpect(jsonPath("$.message").value("Access denied: Only logged-in admins can perform this action."));
     }
 
     @Test
     void getAllUsers_ShouldReturnOkStatus_WhenAdminUser() throws Exception {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
 
         when(userService.isLoggedIn(1L)).thenReturn(true);
         doNothing().when(userService).checkAdminAndLoggedIn(1L);
@@ -143,9 +146,8 @@ class UserControllerTest {
 
     @Test
     void getAllUsers_ShouldReturnForbiddenStatus_WhenNotAdminUser() throws Exception {
-        User nonAdminUser = new User();
 
-        when(userService.getUserById(1L)).thenReturn(Optional.of(nonAdminUser));
+        when(userService.getUserById(1L)).thenReturn(Optional.of(user));
         when(userService.isLoggedIn(1L)).thenReturn(true);
 
         doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Only logged-in admins can perform this action."))
@@ -154,6 +156,6 @@ class UserControllerTest {
         mockMvc.perform(get("/users/all")
                         .param("adminId", "1"))
                 .andExpect(status().isForbidden())
-                .andExpect(content().string("Access denied: Only logged-in admins can perform this action."));
+                .andExpect(jsonPath("$.message").value("Access denied: Only logged-in admins can perform this action."));
     }
 }
