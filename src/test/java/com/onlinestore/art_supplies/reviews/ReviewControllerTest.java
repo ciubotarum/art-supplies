@@ -26,17 +26,23 @@ class ReviewControllerTest {
     @MockBean
     private ReviewService reviewService;
 
+    private Review review;
+    private Long reviewId;
+    private Long userId;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        review = new Review();
+        review.setReviewText("Great product!");
+        userId = 1L;
+        reviewId = 1L;
     }
 
     @Test
     void testCreateReview_Successfully() throws Exception {
-        Review createdReview = new Review();
-        createdReview.setReviewText("Great product!");
 
-        when(reviewService.createReview(anyString(), anyLong(), anyString())).thenReturn(createdReview);
+        when(reviewService.createReview(anyString(), anyLong(), anyString())).thenReturn(review);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/reviews")
                         .param("username", "user")
@@ -125,8 +131,6 @@ class ReviewControllerTest {
 
     @Test
     void testDeleteReview_Successfully() throws Exception {
-        Long userId = 1L;
-        Long reviewId = 1L;
         doNothing().when(reviewService).deleteReview(reviewId, userId);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/reviews/{reviewId}", reviewId)
@@ -137,8 +141,6 @@ class ReviewControllerTest {
 
     @Test
     void testDeleteReview_NotFound() throws Exception {
-        Long reviewId = 1L;
-        Long userId = 1L;
 
         doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Review with " + reviewId + " does not exist."))
                 .when(reviewService).deleteReview(reviewId, userId);

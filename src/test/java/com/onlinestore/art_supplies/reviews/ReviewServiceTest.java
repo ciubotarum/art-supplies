@@ -42,26 +42,28 @@ class ReviewServiceTest {
     @InjectMocks
     private ReviewService reviewService;
 
-
+    private User user;
+    private Product product;
+    private Review review;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        user = new User();
+        user.setUsername("testUser");
+        user.setUserId(1L);
+
+        product = new Product();
+        product.setProductId(1L);
+
+        review = new Review();
+        review.setReviewText("Great product!");
+        review.setProduct(product);
+        review.setUser(user);
     }
 
     @Test
     void testCreateReview_Success() {
-        User user = new User();
-        user.setUsername("testUser");
-        user.setUserId(1L);
-
-        Product product = new Product();
-        product.setProductId(1L);
-
-        Review review = new Review();
-        review.setReviewText("Great product!");
-        review.setProduct(product);
-        review.setUser(user);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
@@ -89,9 +91,6 @@ class ReviewServiceTest {
 
     @Test
     void testCreateReview_ProductNotFound() {
-        User user = new User();
-        user.setUsername("testUser");
-        user.setUserId(1L);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
@@ -106,11 +105,6 @@ class ReviewServiceTest {
 
     @Test
     void testCreateReview_UserHasNotOrderedProduct() {
-        User user = new User();
-        user.setUsername("testUser");
-        user.setUserId(1L);
-        Product product = new Product();
-        product.setProductId(1L);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
@@ -129,11 +123,7 @@ class ReviewServiceTest {
     void testDeleteReview_Success() {
         Long reviewId = 1L;
         Long userId = 1L;
-        User user = new User();
-        user.setUserId(userId);
-        Review review = new Review();
         review.setReviewId(reviewId);
-        review.setUser(user);
 
         when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
