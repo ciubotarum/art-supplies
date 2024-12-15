@@ -22,15 +22,28 @@ class CategoryServiceTest {
     @InjectMocks
     private CategoryService categoryService;
 
+    private Category category;
+    private Category updatedCategory;
+    private List<Category> categories;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        category = new Category();
+        category.setCategoryName("Painting");
+
+        updatedCategory = new Category();
+        updatedCategory.setCategoryName("Drawing");
+
+        Category category2 = new Category();
+        category2.setCategoryName("Sculpting");
+
+        categories = Arrays.asList(category, category2);
     }
 
     @Test
     void testAddCategory() {
-        Category category = new Category();
-        category.setCategoryName("Painting");
 
         when(categoryRepository.save(category)).thenReturn(category);
 
@@ -43,27 +56,20 @@ class CategoryServiceTest {
 
     @Test
     void testUpdateCategoryByName_Success() {
-        Category existingCategory = new Category();
-        existingCategory.setCategoryName("Painting");
 
-        Category updatedCategory = new Category();
-        updatedCategory.setCategoryName("Drawing");
-
-        when(categoryRepository.findByCategoryName("Painting")).thenReturn(existingCategory);
-        when(categoryRepository.save(existingCategory)).thenReturn(existingCategory);
+        when(categoryRepository.findByCategoryName("Painting")).thenReturn(category);
+        when(categoryRepository.save(category)).thenReturn(category);
 
         Category result = categoryService.updateCategoryByName("Painting", updatedCategory);
 
         assertNotNull(result);
         assertEquals("Drawing", result.getCategoryName());
         verify(categoryRepository, times(1)).findByCategoryName("Painting");
-        verify(categoryRepository, times(1)).save(existingCategory);
+        verify(categoryRepository, times(1)).save(category);
     }
 
     @Test
     void testUpdateCategoryByName_NotFound() {
-        Category updatedCategory = new Category();
-        updatedCategory.setCategoryName("Drawing");
 
         when(categoryRepository.findByCategoryName("Painting")).thenReturn(null);
 
@@ -101,13 +107,6 @@ class CategoryServiceTest {
 
     @Test
     void testGetAllCategories() {
-        Category category1 = new Category();
-        category1.setCategoryName("Painting");
-
-        Category category2 = new Category();
-        category2.setCategoryName("Drawing");
-
-        List<Category> categories = Arrays.asList(category1, category2);
 
         when(categoryRepository.findAll()).thenReturn(categories);
 
@@ -121,8 +120,6 @@ class CategoryServiceTest {
     @Test
     void testGetCategoryById_Success() {
         Long categoryId = 1L;
-        Category category = new Category();
-        category.setCategoryName("Painting");
 
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
 

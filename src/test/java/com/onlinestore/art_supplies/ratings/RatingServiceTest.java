@@ -41,25 +41,28 @@ class RatingServiceTest {
     @InjectMocks
     private RatingService ratingService;
 
+    private User user;
+    private Product product;
+    private Rating rating;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        user = new User();
+        user.setUsername("testUser");
+        user.setUserId(1L);
+
+        product = new Product();
+        product.setProductId(1L);
+
+        rating = new Rating();
+        rating.setRating(5);
+        rating.setProduct(product);
+        rating.setUser(user);
     }
 
     @Test
     void testCreateRating_Success() {
-        User user = new User();
-        user.setUsername("testUser");
-        user.setUserId(1L);
-
-        Product product = new Product();
-        product.setProductId(1L);
-
-        Rating rating = new Rating();
-        rating.setRating(5);
-        rating.setProduct(product);
-        rating.setUser(user);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(userService.isLoggedIn(1L)).thenReturn(true);
@@ -88,9 +91,6 @@ class RatingServiceTest {
 
     @Test
     void testCreateRating_ProductNotFound() {
-        User user = new User();
-        user.setUsername("testUser");
-        user.setUserId(1L);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(userService.isLoggedIn(1L)).thenReturn(true);
@@ -106,12 +106,6 @@ class RatingServiceTest {
 
     @Test
     void testCreateRating_UserHasNotOrderedProduct() {
-        User user = new User();
-        user.setUsername("testUser");
-        user.setUserId(1L);
-
-        Product product = new Product();
-        product.setProductId(1L);
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(userService.isLoggedIn(1L)).thenReturn(true);

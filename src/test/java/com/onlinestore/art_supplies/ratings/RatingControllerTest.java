@@ -24,10 +24,14 @@ class RatingControllerTest {
     @MockBean
     private RatingService ratingService;
 
+    private Rating rating1;
+    private Rating rating2;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        rating1 = new Rating();
+        rating2 = new Rating();
     }
 
     @Test
@@ -111,8 +115,6 @@ class RatingControllerTest {
 
     @Test
     void testGetRatingsByProductId() throws Exception {
-        Rating rating1 = new Rating();
-        Rating rating2 = new Rating();
         when(ratingService.getRatingsByProductId(1L)).thenReturn(List.of(rating1, rating2));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/ratings/product/1"))
@@ -134,8 +136,6 @@ class RatingControllerTest {
 
     @Test
     void testGetAllRatings() throws Exception {
-        Rating rating1 = new Rating();
-        Rating rating2 = new Rating();
         when(ratingService.getAllRatings()).thenReturn(List.of(rating1, rating2));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/ratings/all"))

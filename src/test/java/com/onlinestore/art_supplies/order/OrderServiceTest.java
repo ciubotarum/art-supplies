@@ -24,25 +24,31 @@ class OrderServiceTest {
     @InjectMocks
     private OrderService orderService;
 
+    private User user;
+    private OrderItem item1;
+    private OrderItem item2;
+    private List<OrderItem> cartItems;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        user = new User();
+        user.setUserId(1L);
+
+        item1 = new OrderItem();
+        item1.setPrice(BigDecimal.valueOf(10));
+        item1.setQuantity(2);
+
+        item2 = new OrderItem();
+        item2.setPrice(BigDecimal.valueOf(20));
+        item2.setQuantity(1);
+
+        cartItems = Arrays.asList(item1, item2);
     }
 
     @Test
     void testPlaceOrder_Success() {
-        User user = new User();
-        user.setUserId(1L);
-
-        OrderItem item1 = new OrderItem();
-        item1.setPrice(BigDecimal.valueOf(10));
-        item1.setQuantity(2);
-
-        OrderItem item2 = new OrderItem();
-        item2.setPrice(BigDecimal.valueOf(20));
-        item2.setQuantity(1);
-
-        List<OrderItem> cartItems = Arrays.asList(item1, item2);
 
         Order order = new Order();
         order.setUser(user);
@@ -61,26 +67,33 @@ class OrderServiceTest {
     }
 
     @Test
+    void testCalculateTotalAmount_ZeroQuantity() {
+        item1.setQuantity(0);
+        BigDecimal totalAmount = orderService.calculateTotalAmount(cartItems);
+
+        assertEquals(BigDecimal.valueOf(20), totalAmount);
+    }
+
+    @Test
+    void testGetOrderHistory_NoOrders() {
+        when(orderRepository.findByUser_UserId(1L)).thenReturn(Arrays.asList());
+
+        List<Order> orders = orderService.getOrderHistory(user);
+
+        assertTrue(orders.isEmpty());
+        verify(orderRepository, times(1)).findByUser_UserId(1L);
+    }
+
+    @Test
     void testCalculateTotalAmount() {
-        OrderItem item1 = new OrderItem();
-        item1.setPrice(BigDecimal.valueOf(10));
-        item1.setQuantity(2);
 
-        OrderItem item2 = new OrderItem();
-        item2.setPrice(BigDecimal.valueOf(20));
-        item2.setQuantity(1);
-
-        List<OrderItem> items = Arrays.asList(item1, item2);
-
-        BigDecimal totalAmount = orderService.calculateTotalAmount(items);
+        BigDecimal totalAmount = orderService.calculateTotalAmount(cartItems);
 
         assertEquals(BigDecimal.valueOf(40), totalAmount);
     }
 
     @Test
     void testGetOrderHistory() {
-        User user = new User();
-        user.setUserId(1L);
 
         Order order1 = new Order();
         Order order2 = new Order();

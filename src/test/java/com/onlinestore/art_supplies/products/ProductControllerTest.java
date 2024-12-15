@@ -39,16 +39,35 @@ class ProductControllerTest {
     @MockBean
     private CategoryService categoryService;
 
+    private User adminUser;
+    private Category category;
+    private Product product1;
+    private Product product2;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        adminUser = new User();
+        adminUser.setIsAdmin(true);
+        adminUser.setUserId(1L);
+
+        category = new Category();
+        category.setCategoryId(1L);
+        category.setCategoryName("Watercolor");
+
+        product1 = new Product();
+        product1.setProductId(1L);
+        product1.setProductName("Paint Brush");
+        product1.setDescription("A high-quality brush.");
+        product1.setPrice(BigDecimal.valueOf(15.99));
+        product1.setQuantity(50);
+        product1.setImage("http://example.com/image.jpg");
+
+        product2 = new Product();
     }
 
     @Test
     void testGetAllProducts_ShouldReturnOkStatus() throws Exception {
-        Product product1 = new Product();
-        Product product2 = new Product();
         when(productService.getAllProducts()).thenReturn(Arrays.asList(product1, product2));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/products/all"))
@@ -58,9 +77,7 @@ class ProductControllerTest {
 
     @Test
     void testGetProductById_ShouldReturnOkStatus() throws Exception {
-        Product product = new Product();
-        product.setProductId(1L);
-        when(productService.getProductById(1L)).thenReturn(product);
+        when(productService.getProductById(1L)).thenReturn(product1);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/products/product/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -78,24 +95,10 @@ class ProductControllerTest {
 
     @Test
     void testAddProduct_Success() throws Exception {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
-        adminUser.setUserId(1L);
-
-        Category category = new Category();
-        category.setCategoryId(1L);
-        category.setCategoryName("Watercolor");
-
-        Product product = new Product();
-        product.setImage("http://example.com/image.jpg");
-        product.setProductName("Paint Brush");
-        product.setDescription("A high-quality brush.");
-        product.setPrice(BigDecimal.valueOf(15.99));
-        product.setQuantity(50);
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(adminUser));
         when(categoryService.getCategoryById(1L)).thenReturn(category);
-        when(productService.addProduct(any(Product.class))).thenReturn(product);
+        when(productService.addProduct(any(Product.class))).thenReturn(product1);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/products")
                         .param("adminId", "1")
@@ -169,8 +172,6 @@ class ProductControllerTest {
 
     @Test
     void testDeleteProduct_Success() throws Exception {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
 
         when(userService.getUserById(anyLong())).thenReturn(Optional.of(adminUser));
         when(productService.productExistsById(anyLong())).thenReturn(true);
@@ -184,9 +185,6 @@ class ProductControllerTest {
 
     @Test
     void testDeleteProduct_NotFound() throws Exception {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
-
         when(userService.getUserById(anyLong())).thenReturn(Optional.of(adminUser));
         when(productService.productExistsById(anyLong())).thenReturn(false);
 
@@ -212,8 +210,8 @@ class ProductControllerTest {
 
     @Test
     void testSearchProducts() throws Exception {
-        Product product = new Product();
-        when(productService.searchProducts("keyword")).thenReturn(Arrays.asList(product));
+
+        when(productService.searchProducts("keyword")).thenReturn(Arrays.asList(product1));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/products/search")
                         .param("keyword", "keyword"))
@@ -222,17 +220,6 @@ class ProductControllerTest {
 
     @Test
     void testUpdateProduct_Success() throws Exception {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
-        adminUser.setUserId(1L);
-
-        Product initialProduct = new Product();
-        initialProduct.setProductId(1L);
-        initialProduct.setProductName("Original Name");
-        initialProduct.setDescription("A high-quality brush.");
-        initialProduct.setPrice(BigDecimal.valueOf(15.99));
-        initialProduct.setQuantity(50);
-        initialProduct.setImage("http://example.com/image.jpg");
 
         Product updatedProduct = new Product();
         updatedProduct.setProductId(1L);
@@ -290,8 +277,6 @@ class ProductControllerTest {
 
     @Test
     void testFilterProductsByCategory_Success() throws Exception {
-        Product product1 = new Product();
-        Product product2 = new Product();
 
         when(productService.getProductsByCategoryName("Watercolor")).thenReturn(Arrays.asList(product1, product2));
 

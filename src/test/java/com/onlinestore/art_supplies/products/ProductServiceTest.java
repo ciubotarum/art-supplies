@@ -27,15 +27,22 @@ class ProductServiceTest {
     @InjectMocks
     private ProductService productService;
 
+    private Product product;
+    private Product product2;
+    private Category category;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        product = new Product();
+        product2 = new Product();
+        category = new Category();
+        category.setCategoryId(1L);
+        product.setCategory(category);
     }
 
     @Test
     void testGetAllProducts() {
-        Product product = new Product();
-        Product product2 = new Product();
 
         when(productRepository.findAll()).thenReturn(List.of(product, product2));
 
@@ -47,7 +54,6 @@ class ProductServiceTest {
 
     @Test
     void testGetProductById() {
-        Product product = new Product();
 
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
@@ -59,10 +65,6 @@ class ProductServiceTest {
 
     @Test
     void testAddProduct() {
-        Product product = new Product();
-        Category category = new Category();
-        category.setCategoryId(1L);
-        product.setCategory(category);
 
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(productRepository.save(any(Product.class))).thenReturn(product);
@@ -77,10 +79,6 @@ class ProductServiceTest {
 
     @Test
     void testAddProductCategoryNotFound() {
-        Product product = new Product();
-        Category category = new Category();
-        category.setCategoryId(1L);
-        product.setCategory(category);
 
         when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -97,7 +95,6 @@ class ProductServiceTest {
 
     @Test
     void testSearchProducts() {
-        Product product = new Product();
         when(productRepository.searchProducts("keyword")).thenReturn(Arrays.asList(product));
 
         List<Product> products = productService.searchProducts("keyword");
@@ -108,18 +105,17 @@ class ProductServiceTest {
 
     @Test
     void testUpdateProduct() {
-        Product existingProduct = new Product();
         Product updatedProduct = new Product();
         updatedProduct.setProductName("Updated Name");
 
-        when(productRepository.findById(1L)).thenReturn(Optional.of(existingProduct));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
 
         Product result = productService.updateProduct(1L, updatedProduct);
 
         assertEquals("Updated Name", result.getProductName());
         verify(productRepository, times(1)).findById(1L);
-        verify(productRepository, times(1)).save(existingProduct);
+        verify(productRepository, times(1)).save(product);
     }
 
     @Test
@@ -135,10 +131,8 @@ class ProductServiceTest {
 
     @Test
     void testGetProductsByCategoryName() {
-        Product product1 = new Product();
-        Product product2 = new Product();
 
-        when(productRepository.findByCategoryName("Watercolor")).thenReturn(Arrays.asList(product1, product2));
+        when(productRepository.findByCategoryName("Watercolor")).thenReturn(Arrays.asList(product, product2));
 
         List<Product> products = productService.getProductsByCategoryName("Watercolor");
 

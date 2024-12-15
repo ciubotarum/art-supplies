@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class CategoryControllerTest {
@@ -28,18 +28,32 @@ class CategoryControllerTest {
     @InjectMocks
     private CategoryController categoryController;
 
+    private User adminUser;
+    private User nonAdminUser;
+    private Category category;
+    private List<Category> categories;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        adminUser = new User();
+        adminUser.setIsAdmin(true);
+
+        nonAdminUser = new User();
+        nonAdminUser.setIsAdmin(false);
+
+        category = new Category();
+        category.setCategoryName("Painting");
+
+        Category category2 = new Category();
+        category2.setCategoryName("Drawing");
+
+        categories = Arrays.asList(category, category2);
     }
 
     @Test
     void testAddCategory_Success() {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
-
-        Category category = new Category();
-        category.setCategoryName("Painting");
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(adminUser));
         when(categoryService.addCategory(category)).thenReturn(category);
@@ -54,11 +68,6 @@ class CategoryControllerTest {
 
     @Test
     void testAddCategory_Forbidden() {
-        User nonAdminUser = new User();
-        nonAdminUser.setIsAdmin(false);
-
-        Category category = new Category();
-        category.setCategoryName("Painting");
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(nonAdminUser));
 
@@ -72,16 +81,6 @@ class CategoryControllerTest {
 
     @Test
     void testGetAllCategories_Success() {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
-
-        Category category1 = new Category();
-        category1.setCategoryName("Painting");
-
-        Category category2 = new Category();
-        category2.setCategoryName("Drawing");
-
-        List<Category> categories = Arrays.asList(category1, category2);
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(adminUser));
         when(categoryService.getAllCategories()).thenReturn(categories);
@@ -96,8 +95,6 @@ class CategoryControllerTest {
 
     @Test
     void testGetAllCategories_Forbidden() {
-        User nonAdminUser = new User();
-        nonAdminUser.setIsAdmin(false);
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(nonAdminUser));
 
@@ -110,11 +107,6 @@ class CategoryControllerTest {
 
     @Test
     void testUpdateCategoryByName_Success() {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
-
-        Category category = new Category();
-        category.setCategoryName("Drawing");
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(adminUser));
         when(categoryService.updateCategoryByName("Painting", category)).thenReturn(category);
@@ -129,11 +121,6 @@ class CategoryControllerTest {
 
     @Test
     void testUpdateCategoryByName_Forbidden() {
-        User nonAdminUser = new User();
-        nonAdminUser.setIsAdmin(false);
-
-        Category category = new Category();
-        category.setCategoryName("Drawing");
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(nonAdminUser));
 
@@ -146,8 +133,6 @@ class CategoryControllerTest {
 
     @Test
     void testDeleteCategory_Success() {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(adminUser));
         when(categoryService.categoryExistsById(1L)).thenReturn(true);
@@ -163,8 +148,6 @@ class CategoryControllerTest {
 
     @Test
     void testDeleteCategory_NotFound() {
-        User adminUser = new User();
-        adminUser.setIsAdmin(true);
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(adminUser));
         when(categoryService.categoryExistsById(1L)).thenReturn(false);
@@ -180,8 +163,6 @@ class CategoryControllerTest {
 
     @Test
     void testDeleteCategory_Forbidden() {
-        User nonAdminUser = new User();
-        nonAdminUser.setIsAdmin(false);
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(nonAdminUser));
 

@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 class OrderControllerTest {
 
@@ -39,16 +40,32 @@ class OrderControllerTest {
     @InjectMocks
     private OrderController orderController;
 
+    private Product product;
+    private User user;
+    private OrderItem orderItem;
+    private List<OrderItem> orderItems;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        product = new Product();
+        product.setProductId(1L);
+        product.setPrice(BigDecimal.valueOf(10));
+
+        user = new User();
+        user.setUsername("testUser");
+
+        orderItem = new OrderItem();
+        orderItem.setProduct(product);
+        orderItem.setQuantity(2);
+        orderItem.setPrice(BigDecimal.valueOf(10));
+
+        orderItems = new ArrayList<>();
+        orderItems.add(orderItem);
     }
 
     @Test
     void testAddToCart_Success() {
-        Product product = new Product();
-        product.setProductId(1L);
-        product.setPrice(BigDecimal.valueOf(10));
 
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
@@ -73,27 +90,10 @@ class OrderControllerTest {
 
     @Test
     void testCheckout_Success() {
-        Product product = new Product();
-        product.setProductId(1L);
-        product.setPrice(BigDecimal.valueOf(10));
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-
         orderController.addToCart(1L, 2);
-
-        User user = new User();
-        user.setUsername("testUser");
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-
-        OrderItem item = new OrderItem();
-        item.setProduct(product);
-        item.setQuantity(2);
-        item.setPrice(BigDecimal.valueOf(10));
-        List<OrderItem> orderItems = new ArrayList<>();
-        orderItems.add(item);
-
-        Order order = new Order();
-        order.setOrderItems(orderItems);
-        when(orderService.placeOrder(user, orderItems)).thenReturn(order);
+        when(orderService.placeOrder(user, orderItems)).thenReturn(new Order());
 
         Order response = orderController.checkout("testUser");
 
@@ -103,9 +103,6 @@ class OrderControllerTest {
 
     @Test
     void testCheckout_UserNotFound() {
-        Product product = new Product();
-        product.setProductId(1L);
-        product.setPrice(BigDecimal.valueOf(10));
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         orderController.addToCart(1L, 2);
 
@@ -131,8 +128,6 @@ class OrderControllerTest {
 
     @Test
     void testGetOrderHistory_Success() {
-        User user = new User();
-        user.setUsername("testUser");
 
         Order order1 = new Order();
         Order order2 = new Order();
@@ -161,9 +156,6 @@ class OrderControllerTest {
 
     @Test
     void testGetOrderItems() {
-        Product product = new Product();
-        product.setProductId(1L);
-        product.setPrice(BigDecimal.valueOf(10));
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         orderController.addToCart(1L, 2);
