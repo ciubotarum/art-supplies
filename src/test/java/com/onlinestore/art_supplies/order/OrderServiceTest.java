@@ -2,6 +2,7 @@ package com.onlinestore.art_supplies.order;
 
 import com.onlinestore.art_supplies.order.orderitem.OrderItem;
 import com.onlinestore.art_supplies.users.User;
+import com.onlinestore.art_supplies.users.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,6 +21,9 @@ class OrderServiceTest {
 
     @Mock
     private OrderRepository orderRepository;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private OrderService orderService;
@@ -76,6 +80,7 @@ class OrderServiceTest {
 
     @Test
     void testGetOrderHistory_NoOrders() {
+        when(userService.isLoggedIn(1L)).thenReturn(true);
         when(orderRepository.findByUser_UserId(1L)).thenReturn(Arrays.asList());
 
         List<Order> orders = orderService.getOrderHistory(user);
@@ -98,6 +103,7 @@ class OrderServiceTest {
         Order order1 = new Order();
         Order order2 = new Order();
 
+        when(userService.isLoggedIn(1L)).thenReturn(true);
         when(orderRepository.findByUser_UserId(1L)).thenReturn(Arrays.asList(order1, order2));
 
         List<Order> orders = orderService.getOrderHistory(user);

@@ -51,6 +51,7 @@ class OrderControllerTest {
         product = new Product();
         product.setProductId(1L);
         product.setPrice(BigDecimal.valueOf(10));
+        product.setQuantity(10);
 
         user = new User();
         user.setUsername("testUser");
