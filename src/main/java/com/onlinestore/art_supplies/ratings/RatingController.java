@@ -24,11 +24,7 @@ public class RatingController {
             description = "Allows users to submit a rating for a specific product. Users can only rate products " +
                     "they have purchased.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Details for creating a new rating",
-                    required = true,
-                    content = @io.swagger.v3.oas.annotations.media.Content(
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = RatingRequest.class)
-                    )
+                    description = "Details for creating a new rating: ratingValue, productId: 4 (not purchased) or 8 (purchased), username - ion"
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Rating created"),

@@ -2,6 +2,7 @@ package com.onlinestore.art_supplies.reviews;
 
 import com.onlinestore.art_supplies.dto.ReviewRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,20 @@ public class ReviewController {
     @PostMapping
     @Operation(summary = "Create a new review",
             description = "Create a new review for a product",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "You can use productId: 4 (not purchased) or 8 (purchased)"),
+            parameters = {
+                    @Parameter(
+                            name = "username",
+                            description = "The username of the user creating the review",
+                            required = true,
+                            example = "ion"
+                    )
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Review created"),
                     @ApiResponse(responseCode = "400", description = "User not ordered the product or review text is empty"),
+                    @ApiResponse(responseCode = "401", description = "User is not logged in"),
                     @ApiResponse(responseCode = "404", description = "Product or user not found")
             })
     public ResponseEntity<Review> createReview(
@@ -39,7 +51,7 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "Delete a review",
-            description = "Delete a review by review ID",
+            description = "Delete a review by review ID. Only the user who created the review or admin can delete it.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Review deleted"),
                     @ApiResponse(responseCode = "404", description = "Review not found"),

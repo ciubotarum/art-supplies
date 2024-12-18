@@ -1,6 +1,7 @@
 package com.onlinestore.art_supplies.users;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,9 @@ public class UserController {
 
     @PostMapping("/login")
     @Operation(summary = "Login",
-            description = "Login with your username and password",
+            description = "Login with your username and password." +
+                    "You can login as admin using credentials: username=ana, password=test. " +
+                    "You can login as a regular user using credentials: username=ion, password=Password.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Login successful"),
                     @ApiResponse(responseCode = "401", description = "Invalid username or password")
@@ -57,6 +60,20 @@ public class UserController {
     @GetMapping("/{userId}")
     @Operation(summary = "Get user by ID",
             description = "Get a user by its ID",
+            parameters = {
+                    @Parameter(
+                            name = "userId",
+                            description = "The unique identifier of the user to retrieve",
+                            required = true,
+                            example = "3"
+                    ),
+                    @Parameter(
+                            name = "adminId",
+                            description = "The unique identifier of the admin user (use 4 for admin)",
+                            required = true,
+                            example = "2"
+                    )
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "User found"),
                     @ApiResponse(responseCode = "403", description = "Forbidden: Not an logged-in admin"),
@@ -72,6 +89,14 @@ public class UserController {
     @GetMapping("/all")
     @Operation(summary = "Get all users",
             description = "Get all users",
+            parameters = {
+                    @Parameter(
+                            name = "adminId",
+                            description = "The unique identifier of the admin user (use 4 for admin)",
+                            required = true,
+                            example = "2"
+                    )
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Users found"),
                     @ApiResponse(responseCode = "403", description = "Forbidden: Not an logged-in admin")

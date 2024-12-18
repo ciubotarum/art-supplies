@@ -3,6 +3,7 @@ package com.onlinestore.art_supplies.category;
 import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,9 @@ public class CategoryController {
 
     @PostMapping
     @Operation(summary = "Add a new category",
-            description = "Add a new category to the database",
+            description = "Add a new category to the database. Use 2 for non-admin user",
+            parameters = {@Parameter(name = "adminId", description = "The ID of the admin user", required = true, example = "4"),
+            @Parameter(name = "category", description = "The category object to be added", required = true, example = "Paintings")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Category added"),
                     @ApiResponse(responseCode = "403", description = "Forbidden")
@@ -42,7 +45,10 @@ public class CategoryController {
 
     @GetMapping("/all")
     @Operation(summary = "Get all categories",
-            description = "Get all categories from the database",
+            description = "Get all categories from the database. Use 2 for non-admin user",
+            parameters = {
+                    @Parameter(name = "adminId", description = "The ID of the admin user", required = true, example = "4")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Categories found"),
                     @ApiResponse(responseCode = "403", description = "Forbidden")
@@ -58,7 +64,11 @@ public class CategoryController {
 
     @PutMapping("/{categoryName}")
     @Operation(summary = "Update category by name",
-            description = "Update category by name in the database",
+            description = "Update category by name in the database. Use 2 for non-admin user",
+            parameters = {
+                    @Parameter(name = "categoryName", description = "The name of the category to update", required = true, example = "Water Colors"),
+                    @Parameter(name = "adminId", description = "The ID of the admin user", required = true, example = "4"),
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Category updated"),
                     @ApiResponse(responseCode = "403", description = "Forbidden")
@@ -74,7 +84,11 @@ public class CategoryController {
 
     @DeleteMapping
     @Operation(summary = "Delete category",
-            description = "Delete category by ID",
+            description = "Delete category by ID. Use 2 for non-admin user",
+            parameters = {
+                    @Parameter(name = "categoryId", description = "The ID of the category to delete", required = true, example = "3"),
+                    @Parameter(name = "adminId", description = "The ID of the admin user", required = true, example = "4")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Category deleted"),
                     @ApiResponse(responseCode = "404", description = "Category not found"),

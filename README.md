@@ -14,7 +14,7 @@ and reviews.
     - Registered users can log in to their accounts to view order history and manage personal information.
 
 3. **Category filtering**
-    - Users can search for products by categories (e.g., paints, brushes, canvases) to easily find desired items.
+    - Users can filter the products by categories (e.g., paints, brushes, canvases) to easily find desired items.
    
 4. **Product Search**
     - Users can search for specific products by name or keywords to quickly locate items of interest.

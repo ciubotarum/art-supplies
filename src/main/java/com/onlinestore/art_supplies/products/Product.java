@@ -2,6 +2,7 @@ package com.onlinestore.art_supplies.products;
 
 import com.onlinestore.art_supplies.category.Category;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
@@ -34,7 +35,7 @@ public class Product {
     @Positive(message = "Price must be greater than 0.")
     private BigDecimal price;
 
-    @Positive(message = "Quantity must be greater than 0.")
+    @Min(value = 0, message = "Quantity must be a positive number.")
     private int quantity;
 
     @ManyToOne

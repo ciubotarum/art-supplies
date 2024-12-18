@@ -36,14 +36,25 @@ public class OrderController {
     @PostMapping("/add")
     @Operation(summary = "Add product to cart",
             description = "Add a product to the cart by product ID and quantity",
+            parameters = {
+                    @Parameter(name = "productId", description = "The ID of the product", required = true, example = "4"),
+                    @Parameter(name = "quantity", description = "The quantity of the product", required = true, example = "2")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product added to cart"),
+                    @ApiResponse(responseCode = "400", description = "Incorrect quantity"),
                     @ApiResponse(responseCode = "404", description = "Product not found")
             })
     public String addToCart(@RequestParam Long productId, @RequestParam Integer quantity) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found with ID: " + productId));
 
+        if (quantity <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity should be greater than 0");
+        }
+        if (product.getQuantity() < quantity) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not enough stock available for product: " + product.getProductName());
+        }
         for (OrderItem item : orderItems) {
             if (item.getProduct().getProductId().equals(productId)) {
                 item.setQuantity(item.getQuantity() + quantity);
@@ -64,7 +75,7 @@ public class OrderController {
     @Operation(summary = "Checkout",
             description = "Checkout the cart items and place an order",
             parameters = {
-                    @Parameter(name = "username", description = "The username of the user", required = true, example = "john")
+                    @Parameter(name = "username", description = "The username of the user", required = true, example = "ion")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Order placed"),
@@ -95,8 +106,12 @@ public class OrderController {
     @GetMapping("/history")
     @Operation(summary = "Get order history",
             description = "Get order history for a user by username",
+            parameters = {
+                    @Parameter(name = "username", description = "The username of the user", required = true, example = "ion")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Orders found"),
+                    @ApiResponse(responseCode = "403", description = "User is not logged in"),
                     @ApiResponse(responseCode = "404", description = "User not found")
             })
     public List<Order> getOrderHistory(@RequestParam String username) {

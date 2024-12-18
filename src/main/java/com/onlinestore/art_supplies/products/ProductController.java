@@ -70,8 +70,15 @@ public class ProductController {
             description = "Add a new product to the database",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Put productName, description, price, quantity, image"),
+            parameters = {
+                    @Parameter(name = "adminId", description = "The ID of the admin user adding the product (use 4 for admin)",
+                            required = true, example = "2"),
+                    @Parameter(name = "categoryId", description = "The ID of the category to which the product belongs: 2 for Canvas",
+                            required = true, example = "2")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product added"),
+                    @ApiResponse(responseCode = "400", description = "Invalid input"),
                     @ApiResponse(responseCode = "404", description = "Category not found, or user not found"),
                     @ApiResponse(responseCode = "403", description = "Forbidden for non-admin users"),
 
@@ -97,6 +104,11 @@ public class ProductController {
     @DeleteMapping
     @Operation(summary = "Delete product",
             description = "Delete a product by ID",
+            parameters = {
+                    @Parameter(name = "productId", description = "The ID of the product to delete"),
+                    @Parameter(name = "adminId", description = "The ID of the admin user deleting the product (use 4 for admin)",
+                            required = true, example = "4")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product deleted"),
                     @ApiResponse(responseCode = "404", description = "Product not found or user not found"),
@@ -131,6 +143,11 @@ public class ProductController {
     @PutMapping("/{productId}")
     @Operation(summary = "Update product",
             description = "Update a product by ID",
+            parameters = {
+                    @Parameter(name = "productId", description = "The ID of the product to update"),
+                    @Parameter(name = "adminId", description = "The ID of the admin user updating the product (use 4 for admin)",
+                            required = true, example = "4")
+            },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Put productName, description, price, quantity, image, categoryId"),
             responses = {
