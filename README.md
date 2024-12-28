@@ -1,4 +1,4 @@
-# Online Art Supplies Shop
+[//]: # (# Online Art Supplies Shop)
 
 ## Overview
 The Online Art Supplies Shop is a web application designed to provide a seamless shopping experience for art enthusiasts. 
@@ -50,10 +50,9 @@ Each product page displays essential information about the product, including it
 quantity, and images. This feature helps users make informed purchasing decisions by providing all necessary details in 
 one place. 
 
-### 3. Category Filtering
-Users can browse products by categories, such as paints, brushes, and canvases. This feature helps users quickly find 
-the items they are interested in by narrowing down the product list based on selected categories. It enhances the
-shopping experience by making it easier to navigate through the product catalog.
+### 3. Order History
+Users can view their previous orders, including details about purchased items. This feature allows users to keep track
+of their purchases and review past orders for reference.
 
 ### 4. Product Search
 Users can search for specific products by entering keywords or product names in the search bar. This feature provides 
