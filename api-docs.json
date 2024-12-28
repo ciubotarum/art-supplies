@@ -1,1 +1,1662 @@
-{"openapi":"3.0.1","info":{"title":"OpenAPI definition","version":"v0"},"servers":[{"url":"http://localhost:8080","description":"Generated server url"}],"paths":{"/products/{productId}":{"put":{"tags":["product-controller"],"summary":"Update product","description":"Update a product by ID","operationId":"updateProduct","parameters":[{"name":"productId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"adminId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Product"}}},"required":true},"responses":{"200":{"description":"Product updated","content":{"*/*":{"schema":{"type":"object"}}}},"404":{"description":"Product not found","content":{"*/*":{"schema":{"type":"object"}}}},"403":{"description":"Forbidden","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/category/{categoryName}":{"put":{"tags":["category-controller"],"summary":"Update category by name","description":"Update category by name in the database","operationId":"updateCategoryByName","parameters":[{"name":"categoryName","in":"path","required":true,"schema":{"type":"string"}},{"name":"adminId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Category"}}},"required":true},"responses":{"200":{"description":"Category updated","content":{"*/*":{"schema":{"type":"object"}}}},"403":{"description":"Forbidden","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/users/register":{"post":{"tags":["user-controller"],"summary":"Register a new user","description":"Register a new user","operationId":"register","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/User"}}},"required":true},"responses":{"201":{"description":"User registered","content":{"*/*":{"schema":{"$ref":"#/components/schemas/User"}}}},"400":{"description":"Invalid input","content":{"*/*":{"schema":{"$ref":"#/components/schemas/User"}}}}}}},"/users/login":{"post":{"tags":["user-controller"],"summary":"Login","description":"Login","operationId":"login","parameters":[{"name":"username","in":"query","required":true,"schema":{"type":"string"}},{"name":"password","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Login successful","content":{"*/*":{"schema":{"type":"string"}}}},"401":{"description":"Invalid username or password","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/reviews":{"get":{"tags":["review-controller"],"summary":"Get all reviews","description":"Get all reviews","operationId":"getAllReviews","responses":{"200":{"description":"Reviews found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Review"}}}}}}},"post":{"tags":["review-controller"],"summary":"Create a new review","description":"Create a new review for a product","operationId":"createReview","parameters":[{"name":"username","in":"query","required":true,"schema":{"type":"string"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ReviewRequest"}}},"required":true},"responses":{"200":{"description":"Review created","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Review"}}}},"400":{"description":"User not ordered the product or review text is empty","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Review"}}}},"404":{"description":"Product or user not found","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Review"}}}}}}},"/ratings":{"post":{"tags":["rating-controller"],"summary":"Create a new rating","description":"Create a new rating for a product","operationId":"createRating","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RatingRequest"}}},"required":true},"responses":{"200":{"description":"Rating created","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Rating"}}}},"400":{"description":"User not ordered this product","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Rating"}}}},"404":{"description":"User or product not found","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Rating"}}}}}}},"/products":{"post":{"tags":["product-controller"],"summary":"Add a new product","description":"Add a new product to the database","operationId":"addProduct","parameters":[{"name":"adminId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"categoryId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Product"}}},"required":true},"responses":{"200":{"description":"Product added","content":{"*/*":{"schema":{"type":"object"}}}},"400":{"description":"Category not found","content":{"*/*":{"schema":{"type":"object"}}}},"403":{"description":"Forbidden for non-admin users","content":{"*/*":{"schema":{"type":"object"}}}}}},"delete":{"tags":["product-controller"],"summary":"Delete product","description":"Delete a product by ID","operationId":"deleteProduct","parameters":[{"name":"productId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"adminId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"Product deleted","content":{"*/*":{"schema":{"type":"object"}}}},"404":{"description":"Product not found","content":{"*/*":{"schema":{"type":"object"}}}},"403":{"description":"Forbidden for non-admin users","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/order/checkout":{"post":{"tags":["order-controller"],"summary":"Checkout","description":"Checkout the cart items and place an order","operationId":"checkout","parameters":[{"name":"username","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Order placed","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Order"}}}},"400":{"description":"There are no items in the cart","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Order"}}}},"404":{"description":"User not found","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Order"}}}}}}},"/order/add":{"post":{"tags":["order-controller"],"summary":"Add product to cart","description":"Add a product to the cart by product ID and quantity","operationId":"addToCart","parameters":[{"name":"productId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"quantity","in":"query","required":true,"schema":{"type":"integer","format":"int32"}}],"responses":{"200":{"description":"Product added to cart","content":{"*/*":{"schema":{"type":"string"}}}},"404":{"description":"Product not found","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/category":{"post":{"tags":["category-controller"],"summary":"Add a new category","description":"Add a new category to the database","operationId":"addCategory","parameters":[{"name":"adminId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Category"}}},"required":true},"responses":{"200":{"description":"Category added","content":{"*/*":{"schema":{"type":"object"}}}},"403":{"description":"Forbidden","content":{"*/*":{"schema":{"type":"object"}}}}}},"delete":{"tags":["category-controller"],"summary":"Delete category","description":"Delete category by ID","operationId":"deleteCategory","parameters":[{"name":"adminId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"categoryId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"Category deleted","content":{"*/*":{"schema":{"type":"object"}}}},"404":{"description":"Category not found","content":{"*/*":{"schema":{"type":"object"}}}},"403":{"description":"Forbidden, the user is not an admin","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/users/{userId}":{"get":{"tags":["user-controller"],"summary":"Get user by ID","description":"Get a user by its ID","operationId":"getAllUsers","parameters":[{"name":"userId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"adminId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"User found","content":{"*/*":{"schema":{"type":"object"}}}},"403":{"description":"Forbidden: Not an admin","content":{"*/*":{"schema":{"type":"object"}}}},"404":{"description":"User not found","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/users/all":{"get":{"tags":["user-controller"],"summary":"Get all users","description":"Get all users","operationId":"getAllUsers_1","parameters":[{"name":"adminId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"Users found","content":{"*/*":{"schema":{"type":"object"}}}},"403":{"description":"Forbidden: Not an admin","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/reviews/product/{productId}":{"get":{"tags":["review-controller"],"summary":"Get reviews by product ID","description":"Get all reviews for a product by product ID","operationId":"getReviewsByProductId","parameters":[{"name":"productId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"Reviews found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Review"}}}}},"404":{"description":"No reviews found for product","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Review"}}}}}}}},"/ratings/product/{productId}":{"get":{"tags":["rating-controller"],"summary":"Get ratings by product ID","description":"Get all ratings for a product by product ID","operationId":"getRatingsByProductId","parameters":[{"name":"productId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"Ratings found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Rating"}}}}},"404":{"description":"Product not found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Rating"}}}}}}}},"/ratings/all":{"get":{"tags":["rating-controller"],"summary":"Get all ratings","description":"Get all ratings","operationId":"allRatings","responses":{"200":{"description":"Ratings found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Rating"}}}}},"404":{"description":"No ratings found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Rating"}}}}}}}},"/products/search":{"get":{"tags":["product-controller"],"summary":"Search products","description":"Search products by keyword","operationId":"searchProducts","parameters":[{"name":"keyword","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Search results found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Product"}}}}}}}},"/products/product/{id}":{"get":{"tags":["product-controller"],"summary":"Get product by ID","description":"Get a product by its ID","operationId":"getProductById","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"Product found","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Product"}}}},"404":{"description":"Product not found","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Product"}}}}}}},"/products/filter":{"get":{"tags":["product-controller"],"summary":"Filter products by category","description":"Filter products by category name","operationId":"filterProductsByType","parameters":[{"name":"categoryName","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Products found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Product"}}}}},"404":{"description":"No such category found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Product"}}}}}}}},"/products/all":{"get":{"tags":["product-controller"],"summary":"Get all products","description":"Get all products from the database","operationId":"getAllProducts","responses":{"200":{"description":"Products found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Product"}}}}}}}},"/order/items":{"get":{"tags":["order-controller"],"summary":"Get cart items","description":"Get the items in the cart","operationId":"getOrderItems","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/OrderItem"}}}}}}}},"/order/history":{"get":{"tags":["order-controller"],"summary":"Get order history","description":"Get order history for a user by username","operationId":"getOrderHistory","parameters":[{"name":"username","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Orders found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Order"}}}}},"404":{"description":"User not found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Order"}}}}}}}},"/category/all":{"get":{"tags":["category-controller"],"summary":"Get all categories","description":"Get all categories from the database","operationId":"getAllCategories","parameters":[{"name":"adminId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"Categories found","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Category"}}}}},"403":{"description":"Forbidden","content":{"*/*":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Category"}}}}}}}},"/reviews/{reviewId}":{"delete":{"tags":["review-controller"],"summary":"Delete a review","description":"Delete a review by review ID","operationId":"deleteReview","parameters":[{"name":"reviewId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"Review deleted","content":{"*/*":{"schema":{"type":"string"}}}},"404":{"description":"Review not found","content":{"*/*":{"schema":{"type":"string"}}}}}}}},"components":{"schemas":{"Category":{"required":["categoryName"],"type":"object","properties":{"categoryId":{"type":"integer","format":"int64"},"categoryName":{"maxLength":50,"minLength":2,"type":"string"}}},"Product":{"required":["description","productName"],"type":"object","properties":{"productId":{"type":"integer","format":"int64"},"productName":{"type":"string"},"description":{"type":"string"},"price":{"type":"number"},"quantity":{"type":"integer","format":"int32"},"category":{"$ref":"#/components/schemas/Category"},"image":{"pattern":"^(http|https)://.*$","type":"string"}}},"User":{"required":["fullName","password","phone","username"],"type":"object","properties":{"userId":{"type":"integer","format":"int64"},"username":{"type":"string"},"password":{"type":"string"},"fullName":{"type":"string"},"email":{"pattern":"^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$","type":"string"},"phone":{"type":"string"},"isAdmin":{"type":"boolean"}}},"ReviewRequest":{"required":["productId","reviewText"],"type":"object","properties":{"reviewText":{"type":"string"},"productId":{"type":"integer","format":"int64"}}},"Review":{"type":"object","properties":{"reviewId":{"type":"integer","format":"int64"},"product":{"$ref":"#/components/schemas/Product"},"user":{"$ref":"#/components/schemas/User"},"reviewText":{"type":"string"},"createdAt":{"type":"string","format":"date-time"}}},"RatingRequest":{"required":["productId","username"],"type":"object","properties":{"ratingValue":{"maximum":5,"minimum":1,"type":"integer","format":"int32"},"productId":{"type":"integer","format":"int64"},"username":{"type":"string"}}},"Rating":{"type":"object","properties":{"ratingId":{"type":"integer","format":"int64"},"user":{"$ref":"#/components/schemas/User"},"product":{"$ref":"#/components/schemas/Product"},"rating":{"type":"integer","format":"int32"}}},"Order":{"required":["orderDate","user"],"type":"object","properties":{"orderId":{"type":"integer","format":"int64"},"user":{"$ref":"#/components/schemas/User"},"orderDate":{"type":"string","format":"date-time"},"totalAmount":{"type":"number"},"orderItems":{"type":"array","items":{"$ref":"#/components/schemas/OrderItem"}}}},"OrderItem":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"order":{"$ref":"#/components/schemas/Order"},"product":{"$ref":"#/components/schemas/Product"},"quantity":{"minimum":0,"type":"integer","format":"int32"},"price":{"minimum":0,"type":"number"}}}}}}
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Online Art Supplies Shop API",
+    "description": "[//]: # (# Online Art Supplies Shop)\r\n\r\n## Overview\r\nThe Online Art Supplies Shop is a web application designed to provide a seamless shopping experience for art enthusiasts. \r\nUsers can register, browse, and purchase a variety of art supplies while having access to features like product ratings\r\nand reviews.\r\n\r\n## Business Requirements\r\n\r\n1. **User Registration**\r\n    - Customers can register for an account to access personalized features.\r\n\r\n2. **User Login**\r\n    - Registered users can log in to their accounts to view order history and manage personal information.\r\n\r\n3. **Category filtering**\r\n    - Users can filter the products by categories (e.g., paints, brushes, canvases) to easily find desired items.\r\n   \r\n4. **Product Search**\r\n    - Users can search for specific products by name or keywords to quickly locate items of interest.\r\n\r\n5. **Product Details Page**\r\n    - Each product page shows important information, including price, product description, available quantity, and images.\r\n\r\n6. **Shopping Cart Functionality**\r\n    - Users can add products to a shopping cart, view total costs.\r\n\r\n7. **Order History**\r\n    - Users can view their previous orders, including details about purchased items.\r\n\r\n8. **Admin Inventory Management**\r\n    - Administrators can manage inventory by updating stock levels, adding new products, and removing outdated items.\r\n\r\n9. **Product Rating System**\r\n    - Users can rate products on a scale (e.g., 1-5 stars) to provide feedback on their purchases.\r\n\r\n10. **Product Review System**\r\n     - Customers can leave reviews for products, sharing their experiences and opinions with other users.\r\n\r\n\r\n## Minimum Viable Product (MVP) Features\r\n\r\n### 1. User Registration\r\nCustomers can create an account by providing their personal information, such as name, email, and password. This \r\nfeature allows users to access personalized features, such as order history. The registration \r\nprocess includes validation to ensure the accuracy and completeness of the provided information.\r\n\r\n### 2. Product Details Page\r\nEach product page displays essential information about the product, including its price, detailed description, available\r\nquantity, and images. This feature helps users make informed purchasing decisions by providing all necessary details in \r\none place. \r\n\r\n### 3. Order History\r\nUsers can view their previous orders, including details about purchased items. This feature allows users to keep track\r\nof their purchases and review past orders for reference.\r\n\r\n### 4. Product Search\r\nUsers can search for specific products by entering keywords or product names in the search bar. This feature provides \r\na list of matching products, allowing users to quickly locate items of interest. \r\n\r\n### 5. Product Rating System\r\nUsers can rate products on a scale (e.g., 1-5 stars) to provide feedback on their purchases. This feature allows \r\ncustomers to share their satisfaction level with the products they have bought. The ratings are aggregated and \r\ndisplayed on the product details page, helping other users make informed purchasing decisions based on the overall \r\nrating score.\r\n\r\n",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Review Controller",
+      "description": "Operations related to reviews"
+    },
+    {
+      "name": "Order Controller",
+      "description": "Operations related to orders"
+    },
+    {
+      "name": "Rating Controller",
+      "description": "Operations related to ratings"
+    },
+    {
+      "name": "Category Controller",
+      "description": "Operations related to categories"
+    },
+    {
+      "name": "User Controller",
+      "description": "Operations related to users"
+    },
+    {
+      "name": "Product Controller",
+      "description": "Operations related to products"
+    }
+  ],
+  "paths": {
+    "/products/{productId}": {
+      "put": {
+        "tags": [
+          "Product Controller"
+        ],
+        "summary": "Update product",
+        "description": "Update a product by ID",
+        "operationId": "updateProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "The ID of the product to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "adminId",
+            "in": "query",
+            "description": "The ID of the admin user updating the product (use 4 for admin)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 4
+          }
+        ],
+        "requestBody": {
+          "description": "Put productName, description, price, quantity, image, categoryId",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden for non-admin users",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found or user not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/category/{categoryName}": {
+      "put": {
+        "tags": [
+          "Category Controller"
+        ],
+        "summary": "Update category by name",
+        "description": "Update category by name in the database. Use 2 for non-admin user",
+        "operationId": "updateCategoryByName",
+        "parameters": [
+          {
+            "name": "categoryName",
+            "in": "path",
+            "description": "The name of the category to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Water Colors"
+          },
+          {
+            "name": "adminId",
+            "in": "query",
+            "description": "The ID of the admin user",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 4
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Category"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Category updated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "tags": [
+          "User Controller"
+        ],
+        "summary": "Register a new user",
+        "description": "Registers a new user by providing personal details including username, password, fullName, email, and phone number.",
+        "operationId": "register",
+        "requestBody": {
+          "description": "Put your username, password, fullName, email and phone",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "User registered",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "User Controller"
+        ],
+        "summary": "Login",
+        "description": "Login with your username and password.You can login as admin using credentials: username=ana, password=test. You can login as a regular user using credentials: username=ion, password=Password.",
+        "operationId": "login",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid username or password",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews": {
+      "get": {
+        "tags": [
+          "Review Controller"
+        ],
+        "summary": "Get all reviews",
+        "description": "Get all reviews",
+        "operationId": "getAllReviews",
+        "responses": {
+          "200": {
+            "description": "Reviews found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Review Controller"
+        ],
+        "summary": "Create a new review",
+        "description": "Create a new review for a product",
+        "operationId": "createReview",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "The username of the user creating the review",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ion"
+          }
+        ],
+        "requestBody": {
+          "description": "You can use productId: 4 (not purchased) or 8 (purchased)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Review created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not ordered the product or review text is empty",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User is not logged in",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product or user not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ratings": {
+      "post": {
+        "tags": [
+          "Rating Controller"
+        ],
+        "summary": "Create a new rating",
+        "description": "Allows users to submit a rating for a specific product. Users can only rate products they have purchased.",
+        "operationId": "createRating",
+        "requestBody": {
+          "description": "Details for creating a new rating: ratingValue, productId: 4 (not purchased) or 8 (purchased), username - ion",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Rating created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not ordered this product or invalid input",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not logged in",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or product not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products": {
+      "post": {
+        "tags": [
+          "Product Controller"
+        ],
+        "summary": "Add a new product",
+        "description": "Add a new product to the database",
+        "operationId": "addProduct",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "query",
+            "description": "The ID of the admin user adding the product (use 4 for admin)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 2
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "The ID of the category to which the product belongs: 2 for Canvas",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 2
+          }
+        ],
+        "requestBody": {
+          "description": "Put productName, description, price, quantity, image",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Product added",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden for non-admin users",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found, or user not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Product Controller"
+        ],
+        "summary": "Delete product",
+        "description": "Delete a product by ID",
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "query",
+            "description": "The ID of the product to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "adminId",
+            "in": "query",
+            "description": "The ID of the admin user deleting the product (use 4 for admin)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product deleted",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden for non-admin users",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found or user not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/order/checkout": {
+      "post": {
+        "tags": [
+          "Order Controller"
+        ],
+        "summary": "Checkout",
+        "description": "Checkout the cart items and place an order",
+        "operationId": "checkout",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "The username of the user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ion"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order placed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There are no items in the cart",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/order/add": {
+      "post": {
+        "tags": [
+          "Order Controller"
+        ],
+        "summary": "Add product to cart",
+        "description": "Add a product to the cart by product ID and quantity",
+        "operationId": "addToCart",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "query",
+            "description": "The ID of the product",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 4
+          },
+          {
+            "name": "quantity",
+            "in": "query",
+            "description": "The quantity of the product",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product added to cart",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect quantity",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/category": {
+      "post": {
+        "tags": [
+          "Category Controller"
+        ],
+        "summary": "Add a new category",
+        "description": "Add a new category to the database. Use 2 for non-admin user",
+        "operationId": "addCategory",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "query",
+            "description": "The ID of the admin user",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 4
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "The category object to be added",
+            "required": true,
+            "example": "Paintings"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Category"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Category added",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Category Controller"
+        ],
+        "summary": "Delete category",
+        "description": "Delete category by ID. Use 2 for non-admin user",
+        "operationId": "deleteCategory",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "The ID of the category to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 3
+          },
+          {
+            "name": "adminId",
+            "in": "query",
+            "description": "The ID of the admin user",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category deleted",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, the user is not an admin",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "User Controller"
+        ],
+        "summary": "Get user by ID",
+        "description": "Get a user by its ID",
+        "operationId": "getUserById",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The unique identifier of the user to retrieve",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 3
+          },
+          {
+            "name": "adminId",
+            "in": "query",
+            "description": "The unique identifier of the admin user (use 4 for admin)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: Not an logged-in admin",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or admin user not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/all": {
+      "get": {
+        "tags": [
+          "User Controller"
+        ],
+        "summary": "Get all users",
+        "description": "Get all users",
+        "operationId": "getAllUsers",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "query",
+            "description": "The unique identifier of the admin user (use 4 for admin)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: Not an logged-in admin",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/product/{productId}": {
+      "get": {
+        "tags": [
+          "Review Controller"
+        ],
+        "summary": "Get reviews by product ID",
+        "description": "Get all reviews for a product by product ID",
+        "operationId": "getReviewsByProductId",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reviews found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No reviews found for product",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ratings/product/{productId}": {
+      "get": {
+        "tags": [
+          "Rating Controller"
+        ],
+        "summary": "Get ratings by product ID",
+        "description": "Fetches all ratings submitted for a specific product using the product's unique ID.",
+        "operationId": "getRatingsByProductId",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "The unique identifier of the product to retrieve the ratings",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 8
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ratings found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rating"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ratings not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rating"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ratings/all": {
+      "get": {
+        "tags": [
+          "Rating Controller"
+        ],
+        "summary": "Get all ratings",
+        "description": "Retrieves a list of all ratings across all products.",
+        "operationId": "allRatings",
+        "responses": {
+          "200": {
+            "description": "Ratings found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rating"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/search": {
+      "get": {
+        "tags": [
+          "Product Controller"
+        ],
+        "summary": "Search for products",
+        "description": "Allows users to search for products by providing a keyword. The search matches product names or descriptions containing the given keyword.",
+        "operationId": "searchProducts",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "The keyword to search for. The search is case-insensitive.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "brush"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/product/{productId}": {
+      "get": {
+        "tags": [
+          "Product Controller"
+        ],
+        "summary": "Retrieve a product by its ID",
+        "description": "Fetch detailed information about a specific product using its unique ID. Returns the product details if found, or an error message if the product does not exist.",
+        "operationId": "getProductById",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "The unique identifier of the product to retrieve",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/filter": {
+      "get": {
+        "tags": [
+          "Product Controller"
+        ],
+        "summary": "Filter products by category",
+        "description": "Filter products by category name",
+        "operationId": "filterProductsByCategory",
+        "parameters": [
+          {
+            "name": "categoryName",
+            "in": "query",
+            "description": "Name of the category to filter products by",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "brushes"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such category found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/all": {
+      "get": {
+        "tags": [
+          "Product Controller"
+        ],
+        "summary": "Retrieve all products",
+        "description": "Fetch a list of all products available in the database. Each product includes details such as productId, productName, description, price, quantity, category, and image URL",
+        "operationId": "getAllProducts",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the list of products",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/order/items": {
+      "get": {
+        "tags": [
+          "Order Controller"
+        ],
+        "summary": "Get cart items",
+        "description": "Get the items in the cart",
+        "operationId": "getOrderItems",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/order/history": {
+      "get": {
+        "tags": [
+          "Order Controller"
+        ],
+        "summary": "Get order history",
+        "description": "Get order history for a user by username",
+        "operationId": "getOrderHistory",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "The username of the user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ion"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orders found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not logged in",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/category/all": {
+      "get": {
+        "tags": [
+          "Category Controller"
+        ],
+        "summary": "Get all categories",
+        "description": "Get all categories from the database. Use 2 for non-admin user",
+        "operationId": "getAllCategories",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "query",
+            "description": "The ID of the admin user",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categories found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/{reviewId}": {
+      "delete": {
+        "tags": [
+          "Review Controller"
+        ],
+        "summary": "Delete a review",
+        "description": "Delete a review by review ID. Only the user who created the review or admin can delete it.",
+        "operationId": "deleteReview",
+        "parameters": [
+          {
+            "name": "reviewId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review deleted",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User is not logged in",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to delete this review",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Review not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Category": {
+        "required": [
+          "categoryName"
+        ],
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "categoryName": {
+            "maxLength": 50,
+            "minLength": 2,
+            "type": "string"
+          }
+        }
+      },
+      "Product": {
+        "required": [
+          "description",
+          "productName"
+        ],
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "image": {
+            "pattern": "^(http|https)://.*$",
+            "type": "string"
+          }
+        }
+      },
+      "User": {
+        "required": [
+          "fullName",
+          "password",
+          "phone",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "pattern": "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "isAdmin": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReviewRequest": {
+        "required": [
+          "productId",
+          "reviewText"
+        ],
+        "type": "object",
+        "properties": {
+          "reviewText": {
+            "type": "string"
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "reviewId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "product": {
+            "$ref": "#/components/schemas/Product"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "reviewText": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RatingRequest": {
+        "required": [
+          "productId",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "ratingValue": {
+            "maximum": 5,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "Rating": {
+        "type": "object",
+        "properties": {
+          "ratingId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "product": {
+            "$ref": "#/components/schemas/Product"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "Order": {
+        "required": [
+          "orderDate",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "orderDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "orderItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItem"
+            }
+          }
+        }
+      },
+      "OrderItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "order": {
+            "$ref": "#/components/schemas/Order"
+          },
+          "product": {
+            "$ref": "#/components/schemas/Product"
+          },
+          "quantity": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "price": {
+            "minimum": 0,
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}
