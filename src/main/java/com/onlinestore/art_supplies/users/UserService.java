@@ -1,62 +1,53 @@
 package com.onlinestore.art_supplies.users;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.onlinestore.art_supplies.config.security.JwtUtils;
+import com.onlinestore.art_supplies.dto.LoginRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authManager;
+    private final JwtUtils jwtUtils;
 
-    private static final Map<Long, Boolean> loggedInUsers = new HashMap<>();
-
-    @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authManager, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authManager = authManager;
+        this.jwtUtils = jwtUtils;
     }
 
     public User register(User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This username already exists");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getIsAdmin() == null) {
             user.setIsAdmin(false);
         }
         return userRepository.save(user);
     }
 
-    public Optional<User> login(String username, String password) {
-        User user = userRepository.getByUsername(username);
-        if (user == null || !user.getPassword().equals(password)) {
-            return Optional.empty();
+    public String verify(LoginRequest loginRequest) {
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+        if (authentication.isAuthenticated()) {
+            User user = userRepository.findByUsername(loginRequest.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            return jwtUtils.generateToken(user);
         }
-        loggedInUsers.put(user.getUserId(), true);
-        return Optional.of(user);
+        return "fails";
     }
 
-    public boolean isLoggedIn(Long userId) {
-        return loggedInUsers.getOrDefault(userId, false);
-    }
-
-    public void checkAdminAndLoggedIn(Long adminId) {
-        User adminUser = getUserById(adminId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin user not found"));
-        if (!Boolean.TRUE.equals(adminUser.getIsAdmin()) || !isLoggedIn(adminId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Only logged-in admins can perform this action.");
-        }
-    }
-
-    public Optional<User> getUserById(Long userId) {
-        return userRepository.findById(userId);
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public String generateToken(User user) {
+        return jwtUtils.generateToken(user);
     }
 }
