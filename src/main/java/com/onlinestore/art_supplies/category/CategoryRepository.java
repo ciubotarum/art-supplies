@@ -10,4 +10,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query("SELECT c FROM Category c WHERE LOWER(c.categoryName) = LOWER(:categoryName)")
     Category findByCategoryName(@Param("categoryName") String categoryName);
 
+    void deleteByCategoryName(String categoryName);
+
+    boolean existsByCategoryName(String categoryName);
 }

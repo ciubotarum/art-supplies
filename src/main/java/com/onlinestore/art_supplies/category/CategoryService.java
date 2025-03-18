@@ -3,6 +3,7 @@ package com.onlinestore.art_supplies.category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -30,12 +31,15 @@ public class CategoryService {
         }
     }
 
-    public void deleteCategory(Long categoryId) {
-        categoryRepository.deleteById(categoryId);
+    @Transactional
+    public void deleteCategoryByName(String categoryName) {
+        if (categoryRepository.existsByCategoryName(categoryName)) {
+            categoryRepository.deleteByCategoryName(categoryName);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with name: " + categoryName);
+        }
     }
-    public boolean categoryExistsById(Long categoryId) {
-        return categoryRepository.existsById(categoryId);
-    }
+
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
