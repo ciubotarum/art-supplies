@@ -1,8 +1,7 @@
 package com.onlinestore.art_supplies.products;
 
 import com.onlinestore.art_supplies.category.Category;
-import com.onlinestore.art_supplies.category.CategoryService;
-import com.onlinestore.art_supplies.users.UserService;
+import com.onlinestore.art_supplies.category.CategoryRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,13 +20,11 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
-    private final UserService userService;
-    private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
 
-    public ProductController(ProductService productService, UserService userService, CategoryService categoryService) {
+    public ProductController(ProductService productService, CategoryRepository categoryRepository) {
         this.productService = productService;
-        this.userService = userService;
-        this.categoryService = categoryService;
+        this.categoryRepository = categoryRepository;
     }
 
     @GetMapping("/all")
@@ -65,16 +63,14 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     @Operation(summary = "Add a new product",
-            description = "Add a new product to the database",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Put productName, description, price, quantity, image"),
             parameters = {
-                    @Parameter(name = "adminId", description = "The ID of the admin user adding the product (use 4 for admin)",
-                            required = true, example = "2"),
-                    @Parameter(name = "categoryId", description = "The ID of the category to which the product belongs: 2 for Canvas",
-                            required = true, example = "2")
+                    @Parameter(name = "categoryName", description = "The name of the category to which the product belongs",
+                            required = true, example = "brushes")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product added"),
@@ -85,38 +81,29 @@ public class ProductController {
             })
     public ResponseEntity<?> addProduct(
             @RequestBody @Valid Product product,
-            @RequestParam Long adminId,
-            @RequestParam Long categoryId) {
-
-        userService.checkAdminAndLoggedIn(adminId);
-
-        Category category = categoryService.getCategoryById(categoryId);
+            @RequestParam String categoryName) {
+        Category category = categoryRepository.findByCategoryName(categoryName);
         if (category == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found");
         }
-
         product.setCategory(category);
         Product savedProduct = productService.addProduct(product);
         return ResponseEntity.ok(savedProduct);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping
     @Operation(summary = "Delete product",
             description = "Delete a product by ID",
             parameters = {
-                    @Parameter(name = "productId", description = "The ID of the product to delete"),
-                    @Parameter(name = "adminId", description = "The ID of the admin user deleting the product (use 4 for admin)",
-                            required = true, example = "4")
+                    @Parameter(name = "productId", description = "The ID of the product to delete")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product deleted"),
                     @ApiResponse(responseCode = "404", description = "Product not found or user not found"),
                     @ApiResponse(responseCode = "403", description = "Forbidden for non-admin users")
             })
-    public ResponseEntity<?> deleteProduct(@RequestParam Long productId, @RequestParam Long adminId) {
-        userService.checkAdminAndLoggedIn(adminId);
-
+    public ResponseEntity<?> deleteProduct(@RequestParam Long productId) {
         if (!productService.productExistsById(productId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given ID.");
         }
@@ -140,13 +127,12 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{productId}")
     @Operation(summary = "Update product",
             description = "Update a product by ID",
             parameters = {
-                    @Parameter(name = "productId", description = "The ID of the product to update"),
-                    @Parameter(name = "adminId", description = "The ID of the admin user updating the product (use 4 for admin)",
-                            required = true, example = "4")
+                    @Parameter(name = "productId", description = "The ID of the product to update")
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Put productName, description, price, quantity, image, categoryId"),
@@ -156,8 +142,7 @@ public class ProductController {
                     @ApiResponse(responseCode = "404", description = "Product not found or user not found"),
                     @ApiResponse(responseCode = "403", description = "Forbidden for non-admin users")
             })
-    public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestParam Long adminId, @RequestBody @Valid Product updatedProduct) {
-        userService.checkAdminAndLoggedIn(adminId);
+    public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestBody @Valid Product updatedProduct) {
 
         if (!productService.productExistsById(productId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given ID.");
