@@ -33,7 +33,8 @@ public class SecurityConfig {
         http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("users/register", "users/login", "/swagger-ui/**", "/v3/api-docs/**")
+                        .requestMatchers("users/register", "users/login", "/swagger-ui/**", "/v3/api-docs/**", "/",
+                                "/css/**", "/images/**")
                         .permitAll()
                         .anyRequest().authenticated())  // all requests must be authenticated
 //        .formLogin(Customizer.withDefaults())  // use form login for browser
