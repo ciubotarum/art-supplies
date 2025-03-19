@@ -1,0 +1,90 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url("../images/art-supplies.jpg"); /* Set background image */
+    background-size: cover;
+    background-position: center;
+    color: white;
+}
+
+/* Navbar styles */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent navbar */
+    padding: 15px 20px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+}
+
+.nav-links li {
+    margin: 0 15px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+.nav-links a:hover {
+    color: #f4a261;
+}
+
+/* Login button */
+.login-btn {
+    text-decoration: none;
+    background: #f4a261;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.login-btn:hover {
+    background: #e76f51;
+}
+
+/* Hero section */
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+    margin-top: 200px; /* Prevent content from hiding under navbar */
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    border-radius: 10px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+
