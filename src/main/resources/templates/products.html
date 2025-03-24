@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Art Supplies Store</title>
+    <link rel="stylesheet" type="text/css" href="/css/products.css">
+</head>
+<body class="products-page">
+<!--<header>-->
+<!--    <nav>-->
+<!--        <ul>-->
+<!--            <li><a href="/">Home</a></li>-->
+<!--            <li><a href="/products">Products</a></li>-->
+<!--            <li><a href="/orders">Orders</a></li>-->
+<!--        </ul>-->
+<!--    </nav>-->
+<!--    <h1>Products</h1>-->
+<!--</header>-->
+<main class="product-page">
+<!--    <h1>All Products</h1>-->
+    <div class="product-container">
+        <div class="product-card" th:each="product : ${products}">
+            <img th:src="${product.image}" alt="Product Image">
+            <h2 th:text="${product.productName}"></h2>
+            <p th:text="${product.description}"></p>
+            <p>Price: $<span th:text="${product.price}"></span></p>
+            <p>Quantity: <span th:text="${product.quantity}"></span></p>
+            <button>Add to Cart</button>
+        </div>
+    </div>
+</main>
+<!--<footer>-->
+<!--    <p>&copy; 2025 Art Supplies Store</p>-->
+<!--    <p><a href="/contact">Contact Us</a> | <a href="/about">About Us</a></p>-->
+<!--</footer>-->
+<!--<script src="/js/products.js"></script>-->
+</body>
+</html>
