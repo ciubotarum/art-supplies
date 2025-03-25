@@ -4,20 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Art Supplies Store</title>
-    <link rel="stylesheet"  type="text/css" href="/css/styles.css">
+    <link rel="stylesheet"  type="text/css" href="/css/home.css">
+    <link rel="stylesheet" th:href="@{/css/header-footer.css}">
 </head>
 <body>
-<header>
-    <nav>
-        <div class="logo">🎨 Art Supplies</div>
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/products/all">Products</a></li>
-            <li><a href="/orders">Orders</a></li>
-        </ul>
-        <a href="/login" class="login-btn">Login</a>
-    </nav>
-</header>
+<!--<header>-->
+<div th:replace="/fragments/header :: header"></div>
 
 <main>
     <div class="hero">
@@ -26,9 +18,7 @@
     </div>
 </main>
 
-<footer>
-    <p>&copy; 2025 Art Supplies Store</p>
-    <p><a href="/contact">Contact Us</a> | <a href="/about">About Us</a></p>
-</footer>
+<!--<footer>-->
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
