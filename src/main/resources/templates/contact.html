@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Art Supplies Store</title>
+    <link rel="stylesheet" type="text/css" href="/css/contact.css">
+    <link rel="stylesheet" th:href="@{/css/header-footer.css}">
+</head>
+<body>
+<div th:replace="/fragments/header :: header"></div>
+<main>
+    <h1>Contact Us</h1>
+    <div class="contact-info">
+        <h2>Email</h2>
+        <p>support@artsuppliesstore.com</p>
+        <h2>Phone</h2>
+        <p>+544 564 123 4567</p>
+        <h2>Fax</h2>
+        <p>+544 478 987 6543</p>
+    </div>
+</main>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
