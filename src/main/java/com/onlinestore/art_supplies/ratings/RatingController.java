@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,11 +23,12 @@ public class RatingController {
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Create a new rating",
             description = "Allows users to submit a rating for a specific product. Users can only rate products " +
                     "they have purchased.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Details for creating a new rating: ratingValue, productId: 4 (not purchased) or 8 (purchased), username - ion"
+                    description = "Details for creating a new rating: ratingValue, productId, username"
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Rating created"),
@@ -38,8 +40,7 @@ public class RatingController {
             @RequestBody @Valid RatingRequest ratingRequest) {
         Rating createdRating = ratingService.createRating(
                 ratingRequest.getRatingValue(),
-                ratingRequest.getProductId(),
-                ratingRequest.getUsername());
+                ratingRequest.getProductId());
         return ResponseEntity.ok(createdRating);
     }
 
