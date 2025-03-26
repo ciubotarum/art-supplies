@@ -1,4 +1,4 @@
-package com.onlinestore.art_supplies.controller;
+package com.onlinestore.art_supplies.view;
 
 import com.onlinestore.art_supplies.products.Product;
 import com.onlinestore.art_supplies.products.ProductService;

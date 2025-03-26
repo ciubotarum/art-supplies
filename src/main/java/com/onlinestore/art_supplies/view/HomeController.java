@@ -1,4 +1,4 @@
-package com.onlinestore.art_supplies.controller;
+package com.onlinestore.art_supplies.view;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
