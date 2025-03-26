@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Art Supplies Store</title>
+    <link rel="stylesheet" type="text/css" href="/css/about.css">
+    <link rel="stylesheet" th:href="@{/css/header-footer.css}">
+</head>
+<body>
+<div th:replace="/fragments/header :: header"></div>
+<main>
+    <h1>About Us</h1>
+    <div class="about-info">
+        <p>Welcome to Art Supplies Store, your number one source for all things art. We're dedicated to giving you the very best of art supplies, with a focus on quality, customer service, and uniqueness.</p>
+        <p>Founded in 2025, Art Supplies Store has come a long way from its beginnings. When we first started out, our passion for providing the best equipment for artists drove us to do intense research, and gave us the impetus to turn hard work and inspiration into a booming online store. We now serve customers all over the world, and are thrilled to be a part of the quirky, eco-friendly, fair trade wing of the art supplies industry.</p>
+        <p>We hope you enjoy our products as much as we enjoy offering them to you. If you have any questions or comments, please don't hesitate to contact us.</p>
+        <p>Sincerely,<br>The Art Supplies Store Team</p>
+    </div>
+</main>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
