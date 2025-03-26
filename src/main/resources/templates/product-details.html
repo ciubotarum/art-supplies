@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Art Supplies Store</title>
+    <link rel="stylesheet" type="text/css" href="/css/product-details.css">
+    <link rel="stylesheet" th:href="@{/css/header-footer.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<main class="product-details-page">
+    <div class="product-details-container">
+        <img th:src="${product.image}" alt="Product Image">
+        <h2 th:text="${product.productName}"></h2>
+        <p th:text="${product.description}"></p>
+        <p>Price: $<span th:text="${product.price}"></span></p>
+        <p>Quantity: <span th:text="${product.quantity}"></span></p>
+        <div class="rating">
+    <span th:each="i : ${#numbers.sequence(1, 5)}">
+        <span th:if="${i <= averageRating}" class="full-star">&#9733;</span> <!-- Full star -->
+        <span th:if="${i > averageRating and i - 1 < averageRating}" class="half-star">&#9733;</span> <!-- Half star -->
+        <span th:if="${i > averageRating}" class="empty-star">&#9734;</span> <!-- Empty star -->
+    </span>
+        </div>
+        <div>
+            <button>Add to Cart</button>
+        </div>
+        <div class="reviews-section">
+            <h3>Reviews</h3>
+            <div th:each="review : ${reviews}" class="review">
+                <p><strong th:text="${review.user.username}"></strong>: <span th:text="${review.reviewText}"></span></p>
+            </div>
+            <p th:if="${#lists.isEmpty(reviews)}" style="color: grey;">No reviews yet.</p>
+        </div>
+    </div>
+
+</main>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

@@ -47,11 +47,7 @@ public class RatingService {
     }
 
     public List<Rating> getRatingsByProductId(Long productId) {
-        List<Rating> ratings = ratingRepository.findByProduct_ProductId(productId);
-        if (ratings.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No ratings found for product with id: " + productId);
-        }
-        return ratings;
+        return ratingRepository.findByProduct_ProductId(productId);
     }
 
     private boolean userHasOrderedProduct(User user, Long productId) {
@@ -60,5 +56,17 @@ public class RatingService {
 
     public List<Rating> getAllRatings() {
         return ratingRepository.findAll();
+    }
+
+    public Double getAverageRating(Long productId) {
+        List<Rating> ratings = ratingRepository.findByProduct_ProductId(productId);
+        if (ratings.isEmpty()) {
+            return 0.0;
+        }
+        double totalRating = 0;
+        for (Rating rating : ratings) {
+            totalRating += rating.getRating();
+        }
+        return totalRating / ratings.size();
     }
 }
