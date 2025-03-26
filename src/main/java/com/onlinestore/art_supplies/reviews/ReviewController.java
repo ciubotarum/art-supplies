@@ -2,13 +2,13 @@ package com.onlinestore.art_supplies.reviews;
 
 import com.onlinestore.art_supplies.dto.ReviewRequest;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,18 +26,9 @@ public class ReviewController {
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Create a new review",
             description = "Create a new review for a product",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "You can use productId: 4 (not purchased) or 8 (purchased)"),
-            parameters = {
-                    @Parameter(
-                            name = "username",
-                            description = "The username of the user creating the review",
-                            required = true,
-                            example = "ion"
-                    )
-            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Review created"),
                     @ApiResponse(responseCode = "400", description = "User not ordered the product or review text is empty"),
@@ -45,13 +36,15 @@ public class ReviewController {
                     @ApiResponse(responseCode = "404", description = "Product or user not found")
             })
     public ResponseEntity<Review> createReview(
-            @RequestBody @Valid ReviewRequest reviewRequest,
-            @RequestParam String username) {
-        Review  createdReview = reviewService.createReview(reviewRequest.getReviewText(), reviewRequest.getProductId(), username);
+            @RequestBody @Valid ReviewRequest reviewRequest) {
+        Review  createdReview = reviewService.createReview(
+                reviewRequest.getReviewText(),
+                reviewRequest.getProductId());
         return ResponseEntity.ok(createdReview);
     }
 
     @DeleteMapping("/{reviewId}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Delete a review",
             description = "Delete a review by review ID. Only the user who created the review or admin can delete it.",
             responses = {
@@ -60,13 +53,9 @@ public class ReviewController {
                     @ApiResponse(responseCode = "401", description = "User is not logged in"),
                     @ApiResponse(responseCode = "403", description = "User is not authorized to delete this review")
             })
-    public ResponseEntity<String> deleteReview(@PathVariable Long reviewId, @RequestParam Long userId) {
-        try {
-            reviewService.deleteReview(reviewId, userId);
-            return ResponseEntity.ok("Review with id " + reviewId + " was deleted successfully!");
-        } catch (ResponseStatusException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<String> deleteReview(@PathVariable Long reviewId) {
+        reviewService.deleteReview(reviewId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/product/{productId}")
