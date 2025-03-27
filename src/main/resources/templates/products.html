@@ -11,8 +11,15 @@
 <!--<header>-->
 <div th:replace="fragments/header :: header"></div>
 <main class="product-page">
-    <div class="product-container">
-        <div class="product-card" th:each="product : ${products}">
+    <div class="search-filter-container">
+        <input type="text" id="search-bar" placeholder="Search products..." oninput="searchProducts()">
+        <select id="filter-dropdown" onchange="filterProducts()">
+            <option value="">All Types</option>
+            <option th:each="category : ${categories}" th:value="${category.categoryName}" th:text="${category.categoryName}"></option>
+        </select>
+    </div>
+    <div class="product-container" id="product-container">
+        <div class="product-card" th:each="product : ${products}" th:data-type="${product.category.categoryName}" th:data-description="${product.description}">
             <img th:src="${product.image}" alt="Product Image">
             <h2 th:text="${product.productName}"></h2>
             <p>Price: $<span th:text="${product.price}"></span></p>
@@ -25,5 +32,60 @@
 </main>
 <!--<footer>-->
 <div th:replace="fragments/footer :: footer"></div>
+<script>
+    function searchProducts() {
+        const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+        const url = searchTerm ? `/products/search?keyword=${searchTerm}` : '/products/all';
+
+        fetch(url)
+            .then(response => response.json())
+            .then(products => {
+                const productContainer = document.getElementById('product-container');
+                productContainer.innerHTML = '';
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.setAttribute('data-type', product.category.categoryName);
+                    productCard.setAttribute('data-description', product.description);
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="Product Image">
+                        <h2>${product.productName}</h2>
+                        <p>Price: $<span>${product.price}</span></p>
+                        <div class="button-container">
+                            <a class="product-details" href="/products/show/${product.productId}">View Details</a>
+                            <button>Add to Cart</button>
+                        </div>
+                    `;
+                    productContainer.appendChild(productCard);
+                });
+            });
+    }
+
+    function filterProducts() {
+        const filterValue = document.getElementById('filter-dropdown').value.toLowerCase();
+        fetch(`/products/filter?categoryName=${filterValue}`)
+            .then(response => response.json())
+            .then(products => {
+                const productContainer = document.getElementById('product-container');
+                productContainer.innerHTML = '';
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.setAttribute('data-type', product.category.categoryName);
+                    productCard.setAttribute('data-description', product.description);
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="Product Image">
+                        <h2>${product.productName}</h2>
+                        <p>Price: $<span>${product.price}</span></p>
+                        <div class="button-container">
+                            <a class="product-details" href="/products/show/${product.productId}">View Details</a>
+                            <button>Add to Cart</button>
+                        </div>
+                    `;
+                    productContainer.appendChild(productCard);
+                });
+            });
+    }
+</script>
 </body>
 </html>

@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ public class ProductService {
     }
 
     public Product getProductById(Long id) {
-        return (Product) productRepository.findById(id).orElse(null);
+        return productRepository.findById(id).orElse(null);
     }
 
     public Product addProduct(Product product) {
@@ -40,14 +39,14 @@ public class ProductService {
     }
 
     public void deleteProduct(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found with id " + productId);
+        }
         productRepository.deleteById(productId);
     }
 
     public List<Product> searchProducts(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
-            return new ArrayList<>();
-        }
-        return productRepository.searchProducts(keyword);
+        return (keyword == null || keyword.trim().isEmpty()) ? List.of() : productRepository.searchProducts(keyword);
     }
 
     public boolean productExistsById(Long productId) {
