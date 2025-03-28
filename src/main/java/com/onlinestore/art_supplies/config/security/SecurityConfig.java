@@ -33,10 +33,11 @@ public class SecurityConfig {
         http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("users/register", "users/login", "/swagger-ui/**", "/v3/api-docs/**", "/",
+                        .requestMatchers("/login", "/logout", "/register", "/swagger-ui/**", "/v3/api-docs/**", "/",
                                 "/css/**", "/images/**", "products/**", "/favicon.ico", "/contact", "/about")
                         .permitAll()
                         .anyRequest().authenticated())  // all requests must be authenticated
+//                .formLogin(formLogin -> formLogin.loginPage("/login").permitAll())
 //        .formLogin(Customizer.withDefaults())  // use form login for browser
 //                .httpBasic(Customizer.withDefaults())   // work good and in postman, we can disable one of this or both but won't have the login form
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,7 +48,7 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());    // use BCryptPasswordEncoder
+        provider.setPasswordEncoder(passwordEncoder());
         provider.setUserDetailsService(customUserDetailsService);
         return provider;
     }
