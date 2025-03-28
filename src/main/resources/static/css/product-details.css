@@ -1,5 +1,5 @@
 body {
-    background: url('../images/background.jpg') no-repeat center center fixed;
+    background: linear-gradient(to right, #f8e8a6, #f5d0c5);
     background-size: cover;
     font-family: Arial, sans-serif;
 }
