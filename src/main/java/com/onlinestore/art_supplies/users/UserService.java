@@ -46,8 +46,4 @@ public class UserService {
         }
         return "fails";
     }
-
-    public String generateToken(User user) {
-        return jwtUtils.generateToken(user);
-    }
 }
