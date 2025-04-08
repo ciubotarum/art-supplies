@@ -1,14 +1,23 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-    <link rel="stylesheet" type="text/css" th:href="@{../../static/css/header-footer.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header-footer.css}">
 </head>
-<header>
+
+<header th:fragment="header">
     <nav>
         <div class="logo">🎨 Art Supplies</div>
         <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/products/show">Products</a></li>
-            <li><a href="/orders">Orders</a></li>
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/products/show}">Products</a></li>
+            <li><a th:href="@{/orders}">Orders</a></li>
+            <li><a th:href="@{/show/order/items}">Cart</a></li>
         </ul>
-        <a href="/login" class="login-btn">Login</a>
+
+        <a th:href="@{/login}" class="login-btn" sec:authorize="!isAuthenticated()">Login</a>
+        <a th:href="@{/logout}" class="login-btn" sec:authorize="isAuthenticated()">Logout</a>
     </nav>
 </header>
