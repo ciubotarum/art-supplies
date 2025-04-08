@@ -1,6 +1,7 @@
 package com.onlinestore.art_supplies.config.security;
 
 import com.onlinestore.art_supplies.users.CustomUserDetailsService;
+import jakarta.servlet.http.Cookie;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,9 +35,21 @@ public class SecurityConfig {
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/login", "/logout", "/register", "/swagger-ui/**", "/v3/api-docs/**", "/",
-                                "/css/**", "/images/**", "products/**", "/favicon.ico", "/contact", "/about")
+                                "/css/**", "/images/**", "products/**", "/favicon.ico", "/contact", "/about",
+                                "/auth/user")
                         .permitAll()
-                        .anyRequest().authenticated())  // all requests must be authenticated
+                        .anyRequest().authenticated())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            Cookie cookie = new Cookie("Authorization", null);
+                            cookie.setHttpOnly(true);
+                            cookie.setPath("/");
+                            cookie.setMaxAge(0);
+                            response.addCookie(cookie);
+
+                            response.sendRedirect("/");
+                        }))
 //                .formLogin(formLogin -> formLogin.loginPage("/login").permitAll())
 //        .formLogin(Customizer.withDefaults())  // use form login for browser
 //                .httpBasic(Customizer.withDefaults())   // work good and in postman, we can disable one of this or both but won't have the login form
