@@ -3,6 +3,8 @@ package com.onlinestore.art_supplies.view;
 import com.onlinestore.art_supplies.dto.LoginRequest;
 import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,21 +25,19 @@ public class LoginRegisterViewController {
     }
 
     @PostMapping("/login")
-    public String loginPage(@ModelAttribute LoginRequest loginRequest, Model model) {
-        try {
-            String token = userService.verify(loginRequest);
-            Boolean isAuthenticated = !token.equals("fails");
-            model.addAttribute("isAuthenticated", isAuthenticated);
-            return "redirect:/";
-        } catch (Exception e) {
-            model.addAttribute("error", "Invalid username or password");
-            return "login";
-        }
-    }
+    public String loginPage(@ModelAttribute LoginRequest loginRequest, HttpServletResponse response) {
+        String jwt = userService.verify(loginRequest);
 
-    @GetMapping("/logout")
-    public String logout() {
-        return "redirect:/";
+        if (!jwt.equals("fails")) {
+            Cookie cookie = new Cookie("Authorization", jwt);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60); // 1 hour
+            response.addCookie(cookie);
+            return "redirect:/";
+        } else {
+            return "redirect:/login?error";
+        }
     }
 
     @GetMapping("/register")
@@ -47,9 +47,8 @@ public class LoginRegisterViewController {
     }
 
     @PostMapping("/register")
-    public String registerPage(@ModelAttribute User user, Model model) {
+    public String registerPage(@ModelAttribute User user) {
         userService.register(user);
         return "redirect:/login";
     }
-
 }
