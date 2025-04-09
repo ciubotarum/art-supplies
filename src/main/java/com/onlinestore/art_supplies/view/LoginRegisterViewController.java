@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class LoginRegisterViewController {
@@ -20,7 +21,8 @@ public class LoginRegisterViewController {
     }
 
     @GetMapping("/login")
-    public String showLoginPage() {
+    public String showLoginPage(Model model, @RequestParam(required = false) String error) {
+        model.addAttribute("error", error);
         return "login";
     }
 
@@ -28,16 +30,16 @@ public class LoginRegisterViewController {
     public String loginPage(@ModelAttribute LoginRequest loginRequest, HttpServletResponse response) {
         String jwt = userService.verify(loginRequest);
 
-        if (!jwt.equals("fails")) {
-            Cookie cookie = new Cookie("Authorization", jwt);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(60 * 60); // 1 hour
-            response.addCookie(cookie);
-            return "redirect:/";
-        } else {
-            return "redirect:/login?error";
+        if (jwt.equals("fails")) {
+            return "redirect:/login?error=Username or password is incorrect";
         }
+
+        Cookie cookie = new Cookie("Authorization", jwt);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60); // 1 hour
+        response.addCookie(cookie);
+        return "redirect:/";
     }
 
     @GetMapping("/register")
