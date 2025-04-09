@@ -1,7 +1,9 @@
 package com.onlinestore.art_supplies.users;
 
+import com.onlinestore.art_supplies.config.security.CustomAuthenticationFilter;
 import com.onlinestore.art_supplies.config.security.JwtUtils;
 import com.onlinestore.art_supplies.dto.LoginRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,12 +20,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
     private final JwtUtils jwtUtils;
+    private final CustomAuthenticationFilter customAuthenticationFilter;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authManager, JwtUtils jwtUtils) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authManager, JwtUtils jwtUtils, CustomAuthenticationFilter customAuthenticationFilter) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authManager = authManager;
         this.jwtUtils = jwtUtils;
+        this.customAuthenticationFilter = customAuthenticationFilter;
     }
 
     public User register(User user) {
@@ -51,5 +55,12 @@ public class UserService {
         }
 
         return "fails";
+    }
+
+    public User getAuthenticatedUser(HttpServletRequest request) {
+        String token = customAuthenticationFilter.extractTokenFromCookie(request);
+        String username = jwtUtils.getClaim(token, "sub", String.class);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

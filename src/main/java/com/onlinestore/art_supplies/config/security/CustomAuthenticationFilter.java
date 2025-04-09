@@ -31,6 +31,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token = extractTokenFromCookie(request);
+        logger.info("Token extracted: " + token);
         if (token != null) {
             try {
                 String username = jwtUtils.getClaim(token, "sub", String.class);
@@ -49,11 +50,10 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
                 logger.error("Token validation failed: " + e.getMessage());
             }
         }
-        logger.info("Token extracted: " + token);
 
         filterChain.doFilter(request, response);
     }
-    private String extractTokenFromCookie(HttpServletRequest request) {
+    public String extractTokenFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             return Arrays.stream(request.getCookies())
                     .filter(cookie -> cookie.getName().equals("Authorization"))
