@@ -4,6 +4,7 @@ import com.onlinestore.art_supplies.config.security.JwtUtils;
 import com.onlinestore.art_supplies.dto.LoginRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -37,13 +38,18 @@ public class UserService {
     }
 
     public String verify(LoginRequest loginRequest) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        try {
+            Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        if (authentication.isAuthenticated()) {
-            User user = userRepository.findByUsername(loginRequest.getUsername())
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            return jwtUtils.generateToken(user);
+            if (authentication.isAuthenticated()) {
+                User user = userRepository.findByUsername(loginRequest.getUsername())
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                return jwtUtils.generateToken(user);
+            }
+        } catch (BadCredentialsException e) {
+            System.out.println("Authentication failed: " + e.getMessage());
         }
+
         return "fails";
     }
 }
