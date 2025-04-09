@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +27,14 @@
             <p>Price: $<span th:text="${product.price}"></span></p>
             <div class="button-container">
                 <a class="product-details" th:href="@{/products/show/{productId}(productId=${product.productId})}">View Details</a>
-                <button>Add to Cart</button>
+                <form class="add-to-cart-form" th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
+                    <input type="hidden" name="productId" th:value="${product.productId}">
+                    <input type="number" name="quantity" value="1" min="1">
+                    <button type="submit">Add to Cart</button>
+                </form>
+            </div>
+            <div sec:authorize="!isAuthenticated()">
+                <p>Please <a th:href="@{/login}">login</a> to add products to cart</p>
             </div>
         </div>
     </div>
@@ -86,6 +95,30 @@
                 });
             });
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('.add-to-cart-form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Product added to cart!');
+                        } else {
+                            alert('Failed to add product to cart.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+            });
+        });
+    });
 </script>
 </body>
 </html>
