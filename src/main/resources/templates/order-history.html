@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Your Orders</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: left;
+        }
+        h2 {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<h1>Your Orders</h1>
+
+<div th:if="${orders.isEmpty()}">You have no orders.</div>
+
+<div th:each="order : ${orders}">
+    <h2>Order #<span th:text="${order.orderId}"></span></h2>
+    <p>Placed at: <span th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+    <p>Total: $<span th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}"></span></p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Product</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Image</th>
+            <th>Category</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${order.orderItems}">
+            <td th:text="${item.product.productName}"></td>
+            <td th:text="${item.product.description}"></td>
+            <td th:text="${item.quantity}"></td>
+            <td>$<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></td>
+            <td><img th:src="${item.product.image}" width="100"/></td>
+            <td th:text="${item.product.category.categoryName}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <hr/>
+</div>
+
+<a href="/">Back to Home</a>
+</body>
+</html>

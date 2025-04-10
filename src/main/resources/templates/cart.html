@@ -40,6 +40,8 @@
     <button type="submit">Clear Cart</button>
 </form>
 
-<a href="/checkout">Proceed to Checkout</a>
+<form th:action="@{/orders/place-order}" method="post">
+    <button type="submit">Place Order</button>
+</form>
 </body>
 </html>
