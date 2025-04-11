@@ -15,6 +15,7 @@
             <li><a th:href="@{/products/show}">Products</a></li>
             <li sec:authorize="isAuthenticated()"><a th:href="@{/cart}">Cart</a></li>
             <li sec:authorize="isAuthenticated()"><a th:href="@{/orders}">Orders</a></li>
+            <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin}">Admin</a></li>
         </ul>
 
         <a th:href="@{/login}" class="login-btn" sec:authorize="!isAuthenticated()">Login</a>
