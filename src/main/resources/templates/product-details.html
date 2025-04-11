@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,15 +26,13 @@
     </span>
         </div>
         <div>
-            <button>Add to Cart</button>
+            <form class="add-to-cart-form" th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
+                <input type="hidden" name="productId" th:value="${product.productId}">
+                <input type="number" name="quantity" value="1" min="1">
+                <button type="submit">Add to Cart</button>
+            </form>
         </div>
-        <div class="reviews-section">
-            <h3>Reviews</h3>
-            <div th:each="review : ${reviews}" class="review">
-                <p><strong th:text="${review.user.username}"></strong>: <span th:text="${review.reviewText}"></span></p>
-            </div>
-            <p th:if="${#lists.isEmpty(reviews)}" style="color: grey;">No reviews yet.</p>
-        </div>
+        <div th:replace="~{fragments/review-section :: reviews(product=${product}, reviews=${reviews}, canReview=${canReview})}"></div>
     </div>
 
 </main>

@@ -1,0 +1,17 @@
+<div th:fragment="reviews(product, reviews, canReview)" class="reviews-section">
+    <h3>Reviews</h3>
+    <div th:each="review : ${reviews}" class="review">
+        <p><strong th:text="${review.user.username}"></strong>: <span th:text="${review.reviewText}"></span></p>
+    </div>
+    <p th:if="${#lists.isEmpty(reviews)}" style="color: grey;">No reviews yet.</p>
+
+    <div th:if="${canReview}" class="leave-review">
+        <h4>Leave a Review</h4>
+        <form th:action="@{/reviews/add}" method="post">
+            <input type="hidden" name="productId" th:value="${product.productId}">
+            <textarea name="reviewText" placeholder="Write your review here..." required></textarea>
+            <button type="submit">Submit Review</button>
+        </form>
+    </div>
+    <p th:if="${!canReview}" style="color: grey;">You must purchase this product to leave a review.</p>
+</div>
