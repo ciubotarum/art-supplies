@@ -44,7 +44,7 @@
 <script>
     function searchProducts() {
         const searchTerm = document.getElementById('search-bar').value.toLowerCase();
-        const url = searchTerm ? `/products/search?keyword=${searchTerm}` : '/products/all';
+        const url = searchTerm ? `/products/show/search?keyword=${searchTerm}` : '/products/show';
 
         fetch(url)
             .then(response => response.json())
@@ -71,8 +71,11 @@
     }
 
     function filterProducts() {
-        const filterValue = document.getElementById('filter-dropdown').value.toLowerCase();
-        fetch(`/products/filter?categoryName=${filterValue}`)
+        const filterValue = document.getElementById('filter-dropdown').value;
+
+        const categoryName = filterValue === "" ? "all" : filterValue.toLowerCase();
+
+        fetch(`/products/show/filter?categoryName=${categoryName}`)
             .then(response => response.json())
             .then(products => {
                 const productContainer = document.getElementById('product-container');
@@ -83,18 +86,19 @@
                     productCard.setAttribute('data-type', product.category.categoryName);
                     productCard.setAttribute('data-description', product.description);
                     productCard.innerHTML = `
-                        <img src="${product.image}" alt="Product Image">
-                        <h2>${product.productName}</h2>
-                        <p>Price: $<span>${product.price}</span></p>
-                        <div class="button-container">
-                            <a class="product-details" href="/products/show/${product.productId}">View Details</a>
-                            <button>Add to Cart</button>
-                        </div>
-                    `;
+                    <img src="${product.image}" alt="Product Image">
+                    <h2>${product.productName}</h2>
+                    <p>Price: $<span>${product.price}</span></p>
+                    <div class="button-container">
+                        <a class="product-details" href="/products/show/${product.productId}">View Details</a>
+                        <button>Add to Cart</button>
+                    </div>
+                `;
                     productContainer.appendChild(productCard);
                 });
             });
     }
+
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('.add-to-cart-form');
         forms.forEach(form => {

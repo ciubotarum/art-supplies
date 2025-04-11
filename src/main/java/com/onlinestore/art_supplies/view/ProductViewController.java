@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -67,5 +68,18 @@ public class ProductViewController {
         model.addAttribute("averageRating", averageRating);
         model.addAttribute("canRate", canRate);
         return "product-details";
+    }
+
+    @GetMapping("/products/show/filter")
+    public @ResponseBody List<Product> filterProducts(@RequestParam("categoryName") String categoryName) {
+        if ("all".equalsIgnoreCase(categoryName)) {
+            return productService.getAllProducts();
+        }
+        return productService.getProductsByCategoryName(categoryName);
+    }
+
+    @GetMapping("/products/show/search")
+    public @ResponseBody List<Product> searchProducts(@RequestParam("keyword") String keyword) {
+        return productService.searchProducts(keyword);
     }
 }
