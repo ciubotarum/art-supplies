@@ -5,7 +5,11 @@ import com.onlinestore.art_supplies.category.CategoryService;
 import com.onlinestore.art_supplies.products.Product;
 import com.onlinestore.art_supplies.products.ProductService;
 import com.onlinestore.art_supplies.ratings.RatingService;
+import com.onlinestore.art_supplies.reviews.Review;
 import com.onlinestore.art_supplies.reviews.ReviewService;
+import com.onlinestore.art_supplies.users.User;
+import com.onlinestore.art_supplies.users.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +24,14 @@ public class ProductViewController {
     private final RatingService ratingService;
     private final ReviewService reviewService;
     private final CategoryService categoryService;
+    private final UserService userService;
 
-    public ProductViewController(ProductService productService, RatingService ratingService, ReviewService reviewService, CategoryService categoryService) {
+    public ProductViewController(ProductService productService, RatingService ratingService, ReviewService reviewService, CategoryService categoryService, UserService userService) {
         this.productService = productService;
         this.ratingService = ratingService;
         this.reviewService = reviewService;
         this.categoryService = categoryService;
+        this.userService = userService;
     }
 
     @GetMapping("/products/show")
@@ -46,13 +52,19 @@ public class ProductViewController {
     }
 
     @GetMapping("/products/show/{productId}")
-    public String showProductDetails(@PathVariable Long productId, Model model) {
+    public String showProductDetails(@PathVariable Long productId, Model model, HttpServletRequest request) {
         Product product = productService.getProductById(productId);
+        User user = userService.getAuthenticatedUser(request);
         Double averageRating = ratingService.getAverageRating(productId);
+
+        List<Review> reviews = reviewService.getReviewsByProductId(productId);
+        boolean canReview = user != null && reviewService.canUserReviewProduct(user, productId);
 
         System.out.println("Average Rating for Product ID " + productId + ": " + averageRating);
 
         model.addAttribute("product", product);
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("canReview", canReview);
         model.addAttribute("ratings", averageRating);
         model.addAttribute("reviews", reviewService.getReviewsByProductId(productId));
         return "product-details";
