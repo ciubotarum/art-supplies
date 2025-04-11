@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Ratings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div th:fragment="ratings(productId, averageRating, canRate)">
+    <div class="rating-display mb-2" style="font-size: 24px;">
+        <span th:each="i : ${#numbers.sequence(1, 5)}">
+            <span th:switch="${averageRating}">
+
+                <i class="fa-solid fa-star text-warning" style="color: gold;"
+                   th:if="${averageRating >= i}"></i>
+
+                <i class="fa-solid fa-star-half-stroke text-warning" style="color: gold;"
+                   th:if="${averageRating >= i - 0.5 and averageRating < i}"></i>
+
+                <i class="fa-regular fa-star text-secondary" style="color: gold;"
+                   th:if="${averageRating < i - 0.5}"></i>
+            </span>
+        </span>
+        <span class="ms-2" th:text="'(' + ${#numbers.formatDecimal(averageRating, 1, 1)} + '/5)'"></span>
+    </div>
+
+    <div th:if="${canRate}">
+        <form th:action="@{/products/{id}/rate(id=${productId})}" method="post">
+            <label for="ratingValue">Leave your rating:</label>
+            <select name="ratingValue" id="ratingValue" class="form-select-sm mx-2" required>
+                <option value="1" style="color: gold;">1 ★</option>
+                <option value="2" style="color: gold;">2 ★★</option>
+                <option value="3" style="color: gold;">3 ★★★</option>
+                <option value="4" style="color: gold;">4 ★★★★</option>
+                <option value="5" style="color: gold;">5 ★★★★★</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
