@@ -59,14 +59,13 @@ public class ProductViewController {
 
         List<Review> reviews = reviewService.getReviewsByProductId(productId);
         boolean canReview = user != null && reviewService.canUserReviewProduct(user, productId);
-
-        System.out.println("Average Rating for Product ID " + productId + ": " + averageRating);
+        boolean canRate = user != null && ratingService.canUserRateProduct(user, productId);
 
         model.addAttribute("product", product);
         model.addAttribute("reviews", reviews);
         model.addAttribute("canReview", canReview);
-        model.addAttribute("ratings", averageRating);
-        model.addAttribute("reviews", reviewService.getReviewsByProductId(productId));
+        model.addAttribute("averageRating", averageRating);
+        model.addAttribute("canRate", canRate);
         return "product-details";
     }
 }
