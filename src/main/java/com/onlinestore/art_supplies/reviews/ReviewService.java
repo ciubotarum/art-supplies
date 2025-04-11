@@ -69,7 +69,7 @@ public class ReviewService {
         return reviewRepository.findAll();
     }
 
-    private boolean userHasOrderedProduct(User user, Long productId) {
+    public boolean userHasOrderedProduct(User user, Long productId) {
         return orderRepository.existsByUserAndOrderItems_Product_ProductId(user, productId);
     }
     public boolean canUserReviewProduct(User user, Long productId) {
