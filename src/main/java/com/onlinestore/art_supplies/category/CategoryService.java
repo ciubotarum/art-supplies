@@ -21,10 +21,10 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public Category updateCategoryByName(String categoryName, Category updatedCategory) {
+    public Category updateCategoryByName(String categoryName, String newCategoryName) {
         Category existingCategory = categoryRepository.findByCategoryName(categoryName);
         if (existingCategory != null) {
-            existingCategory.setCategoryName(updatedCategory.getCategoryName());
+            existingCategory.setCategoryName(newCategoryName);
             return categoryRepository.save(existingCategory);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with name: " + categoryName);

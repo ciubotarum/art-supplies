@@ -48,24 +48,24 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/{categoryName}")
-    @Operation(summary = "Update category by name",
-            parameters = {
-                    @Parameter(name = "categoryName", description = "The name of the category to update", required = true, example = "Water Colors")
-            },
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Category updated"),
-                    @ApiResponse(responseCode = "404", description = "Category not found"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden")
-            })
-    public ResponseEntity<?> updateCategoryByName(@RequestBody Category category, @PathVariable String categoryName) {
-        try {
-            return ResponseEntity.ok(categoryService.updateCategoryByName(categoryName, category));
-        } catch (ResponseStatusException e) {
-            return new ResponseEntity<>(e.getReason(), e.getStatusCode());
-        }
-    }
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PutMapping("/{categoryName}")
+//    @Operation(summary = "Update category by name",
+//            parameters = {
+//                    @Parameter(name = "categoryName", description = "The name of the category to update", required = true, example = "Water Colors")
+//            },
+//            responses = {
+//                    @ApiResponse(responseCode = "200", description = "Category updated"),
+//                    @ApiResponse(responseCode = "404", description = "Category not found"),
+//                    @ApiResponse(responseCode = "403", description = "Forbidden")
+//            })
+//    public ResponseEntity<?> updateCategoryByName(@RequestBody Category category, @PathVariable String categoryName) {
+//        try {
+//            return ResponseEntity.ok(categoryService.updateCategoryByName(categoryName, category));
+//        } catch (ResponseStatusException e) {
+//            return new ResponseEntity<>(e.getReason(), e.getStatusCode());
+//        }
+//    }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{categoryName}")

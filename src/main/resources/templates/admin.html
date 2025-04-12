@@ -15,6 +15,19 @@
     <button type="submit">Add Category</button>
 </form>
 
+<h2>Update Category</h2>
+<form th:action="@{/admin/update-category}" method="post">
+    <input type="text" name="categoryName" placeholder="Existing Category Name" required>
+    <input type="text" name="newCategoryName" placeholder="New Category Name" required>
+    <button type="submit">Update Category</button>
+</form>
+
+<h2>Delete Category</h2>
+<form th:action="@{/admin/delete-category}" method="post">
+    <input type="text" name="categoryName" placeholder="Category Name" required>
+    <button type="submit">Delete Category</button>
+</form>
+
 <h2>Add Product</h2>
 <form th:action="@{/admin/add-product}" method="post">
     <input type="text" name="productName" placeholder="Product Name" required>
@@ -26,6 +39,26 @@
     </select>
     <input type="url" name="image" placeholder="Image URL" required>
     <button type="submit">Add Product</button>
+</form>
+
+<h2>Edit Product</h2>
+<form th:action="@{/admin/edit-product}" method="post">
+    <input type="number" name="productId" placeholder="Product ID" required>
+    <input type="text" name="productName" placeholder="New Product Name">
+    <textarea name="description" placeholder="New Description"></textarea>
+    <input type="number" name="price" placeholder="New Price" step="0.01">
+    <input type="number" name="quantity" placeholder="New Quantity">
+    <select name="categoryId" required>
+        <option th:each="category : ${categories}" th:value="${category.categoryId}" th:text="${category.categoryName}"></option>
+    </select>
+    <input type="url" name="image" placeholder="New Image URL">
+    <button type="submit">Edit Product</button>
+</form>
+
+<h2>Delete Product</h2>
+<form th:action="@{/admin/delete-product}" method="post">
+    <input type="number" name="productId" placeholder="Product ID" required>
+    <button type="submit">Delete Product</button>
 </form>
 </body>
 </html>

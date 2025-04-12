@@ -63,4 +63,42 @@ public class AdminController {
         productService.addProduct(product);
         return "redirect:/admin";
     }
+
+    @PostMapping("/admin/edit-product")
+    public String editProduct(@RequestParam Long productId,
+                              @RequestParam(required = false) String productName,
+                              @RequestParam(required = false) String description,
+                              @RequestParam(required = false) BigDecimal price,
+                              @RequestParam(required = false) Integer quantity,
+                              @RequestParam(required = false) Long categoryId,
+                              @RequestParam(required = false) String image) {
+        Product updatedProduct = new Product();
+        updatedProduct.setProductName(productName);
+        updatedProduct.setDescription(description);
+        updatedProduct.setPrice(price);
+        updatedProduct.setQuantity(quantity);
+        updatedProduct.setCategory(categoryService.getCategoryById(categoryId));
+        updatedProduct.setImage(image);
+
+        productService.updateProduct(productId, updatedProduct);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/admin/delete-product")
+    public String deleteProduct(@RequestParam Long productId) {
+        productService.deleteProduct(productId);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/admin/update-category")
+    public String updateCategory(@RequestParam String categoryName, @RequestParam String newCategoryName) {
+        categoryService.updateCategoryByName(categoryName, newCategoryName);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/admin/delete-category")
+    public String deleteCategory(@RequestParam String categoryName) {
+        categoryService.deleteCategoryByName(categoryName);
+        return "redirect:/admin";
+    }
 }
