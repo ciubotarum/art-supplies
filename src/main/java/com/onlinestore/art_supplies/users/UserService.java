@@ -59,6 +59,9 @@ public class UserService {
 
     public User getAuthenticatedUser(HttpServletRequest request) {
         String token = customAuthenticationFilter.extractTokenFromCookie(request);
+        if (token == null || token.isBlank()) {
+            return null;
+        }
         String username = jwtUtils.getClaim(token, "sub", String.class);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));

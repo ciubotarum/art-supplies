@@ -36,7 +36,7 @@ public class OrderService {
 
         List<CartItem> cartItems = cartService.getCartItems(user);
         if (cartItems.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty. Please add items to the cart before placing an order.");
         }
 
         Order order = new Order();

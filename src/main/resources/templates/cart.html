@@ -5,7 +5,12 @@
 </head>
 <body>
 <h1>Your Shopping Cart</h1>
-
+<div th:if="${successMessage}" style="color: green; font-weight: bold;">
+    <p th:text="${successMessage}"></p>
+</div>
+<div th:if="${errorMessage}" style="color: red; font-weight: bold;">
+    <p th:text="${errorMessage}"></p>
+</div>
 <table>
     <thead>
     <tr>
