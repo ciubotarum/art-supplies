@@ -1,0 +1,107 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #f8e8a6, #f5d0c5);
+    padding-top: 80px;
+    margin: 0;
+    color: #333;
+}
+.message-box {
+    width: 60%;
+    margin: 20px auto;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.success-message {
+    background-color: #d2f3d2;
+    color: #2e7d32;
+    border: 1px solid #b2dfdb;
+}
+
+.error-message {
+    background-color: #f5c2bc;
+    color: #c62828;
+    border: 1px solid #faacb5;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 2rem;
+    color: #444;
+}
+
+table {
+    width: 90%;
+    margin: 30px auto;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #ff7b54;
+    color: white;
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+td form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Button styles */
+button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #357ABD;
+}
+
+form[action*="clear"], form[action*="place-order"] {
+    text-align: center;
+    margin-top: 20px;
+}
+
+form[action*="clear"] button {
+    background-color: #e94e3f;
+}
+
+form[action*="clear"] button:hover {
+    background-color: #c0392b;
+}
+
+form[action*="place-order"] button {
+    background-color: #27ae60;
+}
+
+form[action*="place-order"] button:hover {
+    background-color: #1e874b;
+}

@@ -2,13 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>My Cart</title>
+    <link rel="stylesheet" th:href="@{/css/header-footer.css}">
+    <link rel="stylesheet" href="/css/cart.css">
+
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <h1>Your Shopping Cart</h1>
-<div th:if="${successMessage}" style="color: green; font-weight: bold;">
+<div th:if="${successMessage}" class="message-box success-message">
     <p th:text="${successMessage}"></p>
 </div>
-<div th:if="${errorMessage}" style="color: red; font-weight: bold;">
+<div th:if="${errorMessage}" class="message-box error-message">
     <p th:text="${errorMessage}"></p>
 </div>
 <table>

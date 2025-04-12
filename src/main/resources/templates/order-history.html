@@ -1,27 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Orders</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 30px;
-        }
-        th, td {
-            border: 1px solid #999;
-            padding: 8px;
-            text-align: left;
-        }
-        h2 {
-            margin-top: 40px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/order-history.css">
+    <link rel="stylesheet" th:href="@{/css/header-footer.css}">
 </head>
-<body>
+<body class="order-history-page">
+<div th:replace="~{fragments/header :: header}"></div>
 <h1>Your Orders</h1>
 
-<div th:if="${orders.isEmpty()}">You have no orders.</div>
+<div th:if="${orders.isEmpty()}" style="text-align: center; font-size: 1.2em; color: #888; margin-top: 20px;">
+    You have no orders.
+</div>
 
 <div th:each="order : ${orders}">
     <h2>Order #<span th:text="${order.orderId}"></span></h2>

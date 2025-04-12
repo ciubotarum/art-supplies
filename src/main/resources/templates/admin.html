@@ -2,8 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Admin Page</title>
+    <link rel="stylesheet" th:href="@{/css/header-footer.css}">
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <h1>Admin Dashboard</h1>
 
 <h2>Add Category</h2>
