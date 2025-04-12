@@ -77,3 +77,8 @@ footer {
     width: 100%;
     color: white;
 }
+
+a {
+    color: #f4a261;
+    text-decoration: none;
+}
