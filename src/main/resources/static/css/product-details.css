@@ -79,3 +79,14 @@ button {
 button:hover {
     background-color: #d43f20;
 }
+
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #dc3545;
+}
+.icon-button:hover {
+    color: #a71d2a;
+}

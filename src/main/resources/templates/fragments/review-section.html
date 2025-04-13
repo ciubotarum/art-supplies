@@ -2,6 +2,33 @@
     <h3>Reviews</h3>
     <div th:each="review : ${reviews}" class="review">
         <p><strong th:text="${review.user.username}"></strong>: <span th:text="${review.reviewText}"></span></p>
+        <div th:if="${editingReviewId != review.reviewId}">
+            <form th:if="${canEditMap[review.reviewId]}"
+                  th:action="@{/products/show/{productId}(productId=${product.productId})}"
+                  method="get" style="display:inline;">
+                <input type="hidden" name="editingReviewId" th:value="${review.reviewId}" />
+                <button type="submit" class="icon-button" title="Edit review">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+            </form>
+            <form th:if="${canDeleteMap[review.reviewId]}"
+                  th:action="@{/reviews/delete}"
+                  method="post" style="display:inline;">
+                <input type="hidden" name="reviewId" th:value="${review.reviewId}" />
+                <button type="submit" class="icon-button" title="Delete review"
+                        onclick="return confirm('Are you sure you want to delete this review?');">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </form>
+        </div>
+        <form th:if="${editingReviewId == review.reviewId}"
+              th:action="@{/reviews/update}"
+              method="post">
+            <input type="hidden" name="reviewId" th:value="${review.reviewId}" />
+            <textarea name="reviewText" rows="3" cols="50" th:text="${review.reviewText}"></textarea>
+            <button type="submit">Save</button>
+            <a th:href="@{/products/show/{productId}(productId=${product.productId})}">Cancel</a>
+        </form>
     </div>
     <p th:if="${#lists.isEmpty(reviews)}" style="color: grey;">No reviews yet.</p>
 
