@@ -29,4 +29,37 @@ public class ReviewViewController {
         reviewService.createReview(reviewText, productId);
         return "redirect:/products/show/" + productId;
     }
+
+    @PostMapping("/reviews/update")
+    public String updateReview(@RequestParam Long reviewId, @RequestParam String reviewText, HttpServletRequest request) {
+        User user = userService.getAuthenticatedUser(request);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not logged in");
+        }
+        if (!reviewService.canUserEditReview(user, reviewId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to edit this review");
+        }
+        reviewService.updateReview(reviewId, reviewText, user);
+        Long productId = reviewService.getProductIdByReviewId(reviewId);
+        return "redirect:/products/show/" + productId;
+    }
+
+    @PostMapping("/reviews/delete")
+    public String deleteReview(@RequestParam Long reviewId, HttpServletRequest request) {
+        User user = userService.getAuthenticatedUser(request);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not logged in");
+        }
+
+        boolean isOwner = reviewService.canUserEditReview(user, reviewId);
+        boolean isAdmin = user.getIsAdmin();
+
+        if (!isOwner && !isAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to delete this review");
+        }
+
+        Long productId = reviewService.getProductIdByReviewId(reviewId);
+        reviewService.deleteReview(reviewId);
+        return "redirect:/products/show/" + productId;
+    }
 }

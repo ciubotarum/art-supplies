@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ProductViewController {
@@ -53,12 +55,22 @@ public class ProductViewController {
     }
 
     @GetMapping("/products/show/{productId}")
-    public String showProductDetails(@PathVariable Long productId, Model model, HttpServletRequest request) {
+    public String showProductDetails(@PathVariable Long productId, @RequestParam(required = false) Long editingReviewId, Model model, HttpServletRequest request) {
         Product product = productService.getProductById(productId);
         User user = userService.getAuthenticatedUser(request);
         Double averageRating = ratingService.getAverageRating(productId);
 
         List<Review> reviews = reviewService.getReviewsByProductId(productId);
+        Map<Long, Boolean> canEditMap = new HashMap<>();
+        Map<Long, Boolean> canDeleteMap = new HashMap<>();
+
+        for (Review review : reviews) {
+            boolean canEdit = (user != null) && reviewService.canUserEditReview(user, review.getReviewId());
+            boolean isAdmin = user != null && user.getIsAdmin();
+            canEditMap.put(review.getReviewId(), canEdit);
+            canDeleteMap.put(review.getReviewId(), canEdit || isAdmin);
+        }
+
         boolean canReview = user != null && reviewService.canUserReviewProduct(user, productId);
         boolean canRate = user != null && ratingService.canUserRateProduct(user, productId);
 
@@ -67,6 +79,9 @@ public class ProductViewController {
         model.addAttribute("canReview", canReview);
         model.addAttribute("averageRating", averageRating);
         model.addAttribute("canRate", canRate);
+        model.addAttribute("canEditMap", canEditMap);
+        model.addAttribute("editingReviewId", editingReviewId);
+        model.addAttribute("canDeleteMap", canDeleteMap);
         return "product-details";
     }
 

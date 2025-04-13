@@ -61,8 +61,24 @@ public class ReviewService {
         reviewRepository.deleteById(reviewId);
     }
 
+    public void updateReview(Long reviewId, String reviewText, User user) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found with id: " + reviewId));
+        if (!review.getUser().getUserId().equals(user.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to update this review");
+        }
+        review.setReviewText(reviewText);
+        reviewRepository.save(review);
+    }
+
     public List<Review> getReviewsByProductId(Long productId) {
         return reviewRepository.findReviewByProduct_ProductId(productId);
+    }
+
+    public Long getProductIdByReviewId(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found with id: " + reviewId));
+        return review.getProduct().getProductId();
     }
 
     public List<Review> getAllReviews() {
@@ -72,7 +88,14 @@ public class ReviewService {
     public boolean userHasOrderedProduct(User user, Long productId) {
         return orderRepository.existsByUserAndOrderItems_Product_ProductId(user, productId);
     }
+
     public boolean canUserReviewProduct(User user, Long productId) {
         return userHasOrderedProduct(user, productId);
+    }
+
+    public boolean canUserEditReview(User user, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review with " + reviewId + " does not exist."));
+        return review.getUser().getUserId().equals(user.getUserId());
     }
 }
