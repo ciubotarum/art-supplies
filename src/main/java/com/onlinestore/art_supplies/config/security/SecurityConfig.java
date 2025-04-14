@@ -33,10 +33,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(customizer -> customizer.disable())
+                .headers(headers -> headers.defaultsDisabled()
+                        .frameOptions(frameOptionsConfig -> frameOptionsConfig.sameOrigin()))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/login", "/logout", "/register", "/swagger-ui/**", "/v3/api-docs/**", "/",
                                 "/css/**", "/images/**", "products/**", "/favicon.ico", "/contact", "/about",
-                                "/auth/user")
+                                "/h2-console/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout
