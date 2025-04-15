@@ -3,6 +3,9 @@ package com.onlinestore.art_supplies.products;
 import com.onlinestore.art_supplies.category.Category;
 import com.onlinestore.art_supplies.category.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -74,5 +77,18 @@ public class ProductService {
 
     public List<Product> getProductsByCategoryName(String categoryName) {
         return productRepository.findByCategoryName(categoryName);
+    }
+
+    public Page<Product> getFilteredProducts(int page, String keyword, String categoryName) {
+        Pageable pageable = PageRequest.of(page, 6); // 6 products per page
+        if ((keyword == null || keyword.isEmpty()) && (categoryName == null || categoryName.isEmpty())) {
+            return productRepository.findAll(pageable);
+        } else if (keyword != null && !keyword.isEmpty() && (categoryName == null || categoryName.isEmpty())) {
+            return productRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
+        } else if ((keyword == null || keyword.isEmpty()) && categoryName != null && !categoryName.isEmpty()) {
+            return productRepository.findByCategory_CategoryNameIgnoreCase(categoryName, pageable);
+        } else {
+            return productRepository.findByProductNameContainingIgnoreCaseAndCategory_CategoryNameIgnoreCase(keyword, categoryName, pageable);
+        }
     }
 }
