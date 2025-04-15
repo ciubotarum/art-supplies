@@ -10,6 +10,7 @@ import com.onlinestore.art_supplies.reviews.ReviewService;
 import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,18 +39,19 @@ public class ProductViewController {
     }
 
     @GetMapping("/products/show")
-    public String showAllProducts(@RequestParam(required = false) String keyword, @RequestParam(required = false) String category, Model model) {
-        List<Product> products;
-        if (keyword != null && !keyword.isEmpty()) {
-            products = productService.searchProducts(keyword);
-        } else if (category != null && !category.isEmpty()) {
-            products = productService.getProductsByCategoryName(category);
-        } else {
-            products = productService.getAllProducts();
-        }
+    public String showAllProducts(@RequestParam(required = false) String keyword,
+                                  @RequestParam(required = false) String categoryName,
+                                  @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                                  Model model) {
+        Page<Product> productPage = productService.getFilteredProducts(page, keyword, categoryName);
         List<Category> categories = categoryService.getAllCategories();
-        model.addAttribute("products", products);
+
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("categories", categories);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("selectedCategory", categoryName);
 
         return "products";
     }
