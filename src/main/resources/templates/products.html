@@ -4,125 +4,74 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Art Supplies Store</title>
     <link rel="stylesheet" type="text/css" href="/css/products.css">
     <link rel="stylesheet" th:href="@{/css/header-footer.css}">
 </head>
-<body class="products-page">
+<body>
 <!--<header>-->
 <div th:replace="~{fragments/header :: header}"></div>
-<main class="product-page">
-    <div class="search-filter-container">
-        <input type="text" id="search-bar" placeholder="Search products..." oninput="searchProducts()">
-        <select id="filter-dropdown" onchange="filterProducts()">
-            <option value="">All Types</option>
-            <option th:each="category : ${categories}" th:value="${category.categoryName}" th:text="${category.categoryName}"></option>
-        </select>
+<main class="container">
+
+    <!-- Filter and Search Form -->
+    <div class="search-filter">
+        <form method="get" th:action="@{/products/show}" class="search-filter-container">
+            <input type="text" id="search-bar" name="keyword" placeholder="Search by name" th:value="${keyword}">
+            <select id="filter-dropdown" name="categoryName">
+                <option value="">All Categories</option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.categoryName}"
+                        th:text="${cat.categoryName}"
+                        th:selected="${cat.categoryName == selectedCategory}">
+                </option>
+            </select>
+            <button type="submit">Search</button>
+        </form>
     </div>
-    <div class="product-container" id="product-container">
-        <div class="product-card" th:each="product : ${products}" th:data-type="${product.category.categoryName}" th:data-description="${product.description}">
+
+    <!-- Product Cards -->
+    <div class="product-container">
+        <div class="product-card" th:each="product : ${products}">
             <img th:src="${product.image}" alt="Product Image">
-            <h2 th:text="${product.productName}"></h2>
-            <p>Price: $<span th:text="${product.price}"></span></p>
+            <h5 th:text="${product.productName}">Product Name</h5>
+            <p>Price: $<span th:text="${product.price}">0.00</span></p>
+            <p>In stock: <span th:text="${product.quantity}">0</span></p>
+
             <div class="button-container">
-                <a class="product-details" th:href="@{/products/show/{productId}(productId=${product.productId})}">View Details</a>
-                <form class="add-to-cart-form" th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
-                    <input type="hidden" name="productId" th:value="${product.productId}">
-                    <input type="number" name="quantity" value="1" min="1">
-                    <button type="submit">Add to Cart</button>
-                </form>
-            </div>
-            <div sec:authorize="!isAuthenticated()">
-                <p>Please <a th:href="@{/login}">login</a> to add products to cart</p>
+                <a th:href="@{/products/show/{id}(id=${product.productId})}" class="product-details">View
+                    Details</a>
+
+                <div sec:authorize="isAuthenticated()">
+                    <form th:action="@{/cart/add}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.productId}">
+                        <input type="number" name="quantity" min="1" value="1" class="form-control mb-2">
+                        <button type="submit">Add to Cart</button>
+                    </form>
+                </div>
+
+                <div sec:authorize="!isAuthenticated()">
+                    <p class="text-muted">Please <a th:href="@{/login}">login</a> to add to cart.</p>
+                </div>
             </div>
         </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-info">
+        <nav class="pagination-nav">
+            <ul class="pagination">
+                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active' : ''"
+                    class="page-item">
+                    <a class="page-link"
+                       th:href="@{/products/show(page=${i}, keyword=${keyword}, categoryName=${selectedCategory})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </main>
 <!--<footer>-->
 <div th:replace="~{fragments/footer :: footer}"></div>
-<script>
-    function searchProducts() {
-        const searchTerm = document.getElementById('search-bar').value.toLowerCase();
-        const url = searchTerm ? `/products/show/search?keyword=${searchTerm}` : '/products/show';
-
-        fetch(url)
-            .then(response => response.json())
-            .then(products => {
-                const productContainer = document.getElementById('product-container');
-                productContainer.innerHTML = '';
-                products.forEach(product => {
-                    const productCard = document.createElement('div');
-                    productCard.className = 'product-card';
-                    productCard.setAttribute('data-type', product.category.categoryName);
-                    productCard.setAttribute('data-description', product.description);
-                    productCard.innerHTML = `
-                        <img src="${product.image}" alt="Product Image">
-                        <h2>${product.productName}</h2>
-                        <p>Price: $<span>${product.price}</span></p>
-                        <div class="button-container">
-                            <a class="product-details" href="/products/show/${product.productId}">View Details</a>
-                            <button>Add to Cart</button>
-                        </div>
-                    `;
-                    productContainer.appendChild(productCard);
-                });
-            });
-    }
-
-    function filterProducts() {
-        const filterValue = document.getElementById('filter-dropdown').value;
-
-        const categoryName = filterValue === "" ? "all" : filterValue.toLowerCase();
-
-        fetch(`/products/show/filter?categoryName=${categoryName}`)
-            .then(response => response.json())
-            .then(products => {
-                const productContainer = document.getElementById('product-container');
-                productContainer.innerHTML = '';
-                products.forEach(product => {
-                    const productCard = document.createElement('div');
-                    productCard.className = 'product-card';
-                    productCard.setAttribute('data-type', product.category.categoryName);
-                    productCard.setAttribute('data-description', product.description);
-                    productCard.innerHTML = `
-                    <img src="${product.image}" alt="Product Image">
-                    <h2>${product.productName}</h2>
-                    <p>Price: $<span>${product.price}</span></p>
-                    <div class="button-container">
-                        <a class="product-details" href="/products/show/${product.productId}">View Details</a>
-                        <button>Add to Cart</button>
-                    </div>
-                `;
-                    productContainer.appendChild(productCard);
-                });
-            });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const forms = document.querySelectorAll('.add-to-cart-form');
-        forms.forEach(form => {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const formData = new FormData(form);
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('Product added to cart!');
-                        } else {
-                            alert('Failed to add product to cart.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    });
-            });
-        });
-    });
-</script>
 </body>
 </html>
