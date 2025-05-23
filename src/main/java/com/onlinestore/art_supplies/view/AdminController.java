@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 
@@ -38,10 +39,16 @@ public class AdminController {
     }
 
     @PostMapping("/admin/add-category")
-    public String addCategory(@RequestParam String categoryName) {
-        Category category = new Category();
-        category.setCategoryName(categoryName);
-        categoryService.addCategory(category);
+    public String addCategory(@RequestParam String categoryName, Model model) {
+        try {
+            Category category = new Category();
+            category.setCategoryName(categoryName);
+            categoryService.addCategory(category);
+        } catch (ResponseStatusException ex) {
+            model.addAttribute("categoryError", ex.getReason());
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "admin";
+        }
 
         return "redirect:/admin";
     }
@@ -85,20 +92,36 @@ public class AdminController {
     }
 
     @PostMapping("/admin/delete-product")
-    public String deleteProduct(@RequestParam Long productId) {
-        productService.deleteProduct(productId);
+    public String deleteProduct(@RequestParam Long productId, Model model) {
+        try {
+            productService.deleteProduct(productId);
+        } catch (ResponseStatusException ex) {
+            model.addAttribute("productError", ex.getReason());
+            return "admin";
+        }
         return "redirect:/admin";
     }
 
     @PostMapping("/admin/update-category")
-    public String updateCategory(@RequestParam String categoryName, @RequestParam String newCategoryName) {
-        categoryService.updateCategoryByName(categoryName, newCategoryName);
+    public String updateCategory(@RequestParam String categoryName, @RequestParam String newCategoryName, Model model) {
+        try {
+            categoryService.updateCategoryByName(categoryName, newCategoryName);
+        } catch (ResponseStatusException ex) {
+            model.addAttribute("categoryError", ex.getReason());
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "admin";
+        }
         return "redirect:/admin";
     }
 
     @PostMapping("/admin/delete-category")
-    public String deleteCategory(@RequestParam String categoryName) {
-        categoryService.deleteCategoryByName(categoryName);
+    public String deleteCategory(@RequestParam String categoryName, Model model) {
+        try {
+            categoryService.deleteCategoryByName(categoryName);
+        } catch (ResponseStatusException ex) {
+            model.addAttribute("categoryError", ex.getReason());
+            return "admin";
+        }
         return "redirect:/admin";
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -44,6 +45,7 @@ public class OrderViewController {
     @GetMapping
     public String viewOrders(HttpServletRequest request, Model model) {
         List<Order> orders = orderService.getOrderHistory(request);
+        orders.sort(Comparator.comparing(Order::getOrderDate).reversed());
         model.addAttribute("orders", orders);
         return "order-history";
     }

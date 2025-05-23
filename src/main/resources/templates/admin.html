@@ -9,6 +9,9 @@
 <div th:replace="~{fragments/header :: header}"></div>
 <h1>Admin Dashboard</h1>
 
+<div th:if="${categoryError}" class="warning">
+    <span th:text="${categoryError}"></span>
+</div>
 <h2>Add Category</h2>
 <form th:action="@{/admin/add-category}" method="post">
     <input type="text" name="categoryName" placeholder="Category Name" required>
@@ -55,6 +58,9 @@
     <button type="submit">Edit Product</button>
 </form>
 
+<div th:if="${productError}" class="warning">
+    <span th:text="${productError}"></span>
+</div>
 <h2>Delete Product</h2>
 <form th:action="@{/admin/delete-product}" method="post">
     <input type="number" name="productId" placeholder="Product ID" required>

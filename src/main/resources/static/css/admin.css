@@ -59,6 +59,20 @@ button {
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #e76f51;
+.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin: 20px auto 10px auto;
+    width: 60%;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.warning::before {
+    content: "⚠️";
+    font-size: 1.3rem;
 }

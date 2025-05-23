@@ -18,17 +18,22 @@ public class CategoryService {
     }
 
     public Category addCategory(Category category) {
+        if (categoryRepository.existsByCategoryName(category.getCategoryName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category already exists with name: " + category.getCategoryName());
+        }
         return categoryRepository.save(category);
     }
 
     public Category updateCategoryByName(String categoryName, String newCategoryName) {
         Category existingCategory = categoryRepository.findByCategoryName(categoryName);
-        if (existingCategory != null) {
-            existingCategory.setCategoryName(newCategoryName);
-            return categoryRepository.save(existingCategory);
-        } else {
+        if (existingCategory == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with name: " + categoryName);
         }
+        if (categoryRepository.existsByCategoryName(newCategoryName)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category already exists with name: " + newCategoryName);
+        }
+        existingCategory.setCategoryName(newCategoryName);
+        return categoryRepository.save(existingCategory);
     }
 
     @Transactional
