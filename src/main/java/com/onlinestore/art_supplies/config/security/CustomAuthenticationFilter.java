@@ -31,7 +31,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token = extractTokenFromCookie(request);
-        logger.info("Token extracted: " + token);
+        logger.info("Token extracted from cookie: " + token);
         if (token != null) {
             try {
                 String username = jwtUtils.getClaim(token, "sub", String.class);

@@ -4,6 +4,7 @@ import com.onlinestore.art_supplies.config.security.CustomAuthenticationFilter;
 import com.onlinestore.art_supplies.config.security.JwtUtils;
 import com.onlinestore.art_supplies.dto.LoginRequest;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,20 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
     private final JwtUtils jwtUtils;
     private final CustomAuthenticationFilter customAuthenticationFilter;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authManager, JwtUtils jwtUtils, CustomAuthenticationFilter customAuthenticationFilter) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authManager = authManager;
-        this.jwtUtils = jwtUtils;
-        this.customAuthenticationFilter = customAuthenticationFilter;
-    }
 
     public User register(User user) {
         if (userRepository.existsByUsername(user.getUsername())) {

@@ -45,9 +45,6 @@ class ProductViewControllerTest {
     @MockBean
     private CategoryService categoryService;
 
-//    @MockBean
-//    Model model;
-
     @MockBean
     private UserService userService;
 
