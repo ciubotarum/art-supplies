@@ -64,3 +64,91 @@ customers to share their satisfaction level with the products they have bought. 
 displayed on the product details page, helping other users make informed purchasing decisions based on the overall 
 rating score.
 
+# ER diagram
+```mermaid
+erDiagram
+    users {
+        int user_id PK
+        varchar email
+        varchar full_name
+        boolean is_admin
+        varchar password
+        varchar phone
+        varchar username
+    }
+
+    categories {
+        int category_id PK
+        varchar category_name
+    }
+
+    products {
+        int product_id PK
+        varchar description
+        varchar image
+        numeric price
+        varchar product_name
+        int quantity
+        int category_id FK
+        int user_id FK
+    }
+
+    carts {
+        int cart_id PK
+        int user_id FK
+        int product_id FK
+    }
+
+    cart_items {
+        int cart_item_id PK
+        int cart_id FK
+        int product_id FK
+        int quantity
+    }
+
+    orders {
+        int order_id PK
+        timestamp create_date
+        numeric total_amount
+        int user_id FK
+    }
+
+    order_items {
+        int order_item_id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        numeric price
+    }
+
+    reviews {
+        int review_id PK
+        timestamp created_at
+        varchar review_text
+        int product_id FK
+        int user_id FK
+    }
+
+    ratings {
+        int rating_id PK
+        int rating
+        int product_id FK
+        int user_id FK
+    }
+
+    users ||--o{ carts : "has"
+    users ||--o{ orders : "places"
+    users ||--o{ reviews : "writes"
+    users ||--o{ ratings : "gives"
+    categories ||--o{ products : "contains"
+    users ||--o{ products : "adds"
+    products ||--o{ carts : "in"
+    products ||--o{ cart_items : "has"
+    products ||--o{ order_items : "included"
+    products ||--o{ reviews : "reviewed in"
+    products ||--o{ ratings : "rated in"
+    carts ||--o{ cart_items : "has"
+    orders ||--o{ order_items : "contains"
+
+```
+
