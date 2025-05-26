@@ -3,9 +3,13 @@ package com.onlinestore.art_supplies.order;
 import com.onlinestore.art_supplies.order.cart.CartItem;
 import com.onlinestore.art_supplies.order.cart.CartService;
 import com.onlinestore.art_supplies.order.orderitem.OrderItem;
+import com.onlinestore.art_supplies.products.Product;
+import com.onlinestore.art_supplies.products.ProductService;
 import com.onlinestore.art_supplies.users.User;
 import com.onlinestore.art_supplies.users.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +20,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final CartService cartService;
-
-    public OrderService(OrderRepository orderRepository, UserService userService, CartService cartService) {
-        this.orderRepository = orderRepository;
-        this.userService = userService;
-        this.cartService = cartService;
-    }
+    private final ProductService productService;
 
     @Transactional
     public Order placeOrder(HttpServletRequest request) {
@@ -44,15 +45,23 @@ public class OrderService {
         order.setOrderDate(LocalDateTime.now());
 
         List<OrderItem> orderItems = cartItems.stream().map(cartItem -> {
+            Product product = cartItem.getProduct();
+
+            if (product.getQuantity() < cartItem.getQuantity()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Not enough stock for product: " + product.getProductName());
+            }
+            product.setQuantity(product.getQuantity() - cartItem.getQuantity());
+            productService.addProduct(product);
+
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(cartItem.getProduct());
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setPrice(cartItem.getProduct().getPrice());
             orderItem.setOrder(order);
 
-            System.out.println("CartItem: " + cartItem.getProduct().getProductName() + " - " + cartItem.getQuantity());
-            System.out.println("OrderItem: " + orderItem.getProduct().getProductName() + " - " + orderItem.getQuantity());
-
+            log.info("CartItem: {} - {}", cartItem.getProduct().getProductName(), cartItem.getQuantity());
+            log.info("OrderItem: {} - {}", orderItem.getProduct().getProductName(), orderItem.getQuantity());
 
             return orderItem;
         }).toList();
