@@ -5,6 +5,7 @@ import com.onlinestore.art_supplies.config.security.JwtUtils;
 import com.onlinestore.art_supplies.dto.LoginRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -45,7 +47,7 @@ public class UserService {
                 return jwtUtils.generateToken(user);
             }
         } catch (BadCredentialsException e) {
-            System.out.println("Authentication failed: " + e.getMessage());
+            log.info("Authentication failed: {}", e.getMessage());
         }
 
         return "fails";
