@@ -11,6 +11,9 @@
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="register-container">
     <h2>Register</h2>
+    <div th:if="${registerError}" class="warning">
+        <span th:text="${registerError}"></span>
+    </div>
     <form action="/register" method="post">
         <div class="form-group">
             <label for="username">Username:</label>

@@ -87,3 +87,16 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+.warning::before {
+    content: "⚠️";
+    font-size: 1.3rem;
+}
